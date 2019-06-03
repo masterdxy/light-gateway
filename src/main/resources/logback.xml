@@ -1,0 +1,79 @@
+<configuration debug="false" scan="true" scanPeriod="30 seconds">
+
+    <property resource="application.properties"/>
+    <property name="SERVICE_LOG_FILE_NAME" value="${serviceName}"/>
+    <property name="REQUEST_LOG_FILE_NAME" value="${serviceName}-access"/>
+    <conversionRule conversionWord="hostName" converterClass="com.github.masterdxy.gateway.utils.LogbackUtils"/>
+    <property name="FILE_PATTERN"
+              value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [${serviceName}] [${hostName}] [%thread] [%-5level] %logger{36} - %msg - %replace(%ex){'\n','---'} %nopex %n"/>
+    <property name="CONSOLE_FILE_PATTERN"
+              value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [${serviceName}] [${hostName}] [%thread] [%-5level] %logger{36} - %msg - %n "/>
+
+
+    <appender name="info_fileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${fileBase}/${SERVICE_LOG_FILE_NAME}-info.log</File>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder>
+            <pattern>${FILE_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>32MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <fileNamePattern>${fileBase}/archive/${SERVICE_LOG_FILE_NAME}-info-%d{yyyy-MM-dd}-%i.log.gz
+            </fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+
+    <appender name="warn_fileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${fileBase}/${SERVICE_LOG_FILE_NAME}-warn.log</File>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+        <encoder>
+            <pattern>${FILE_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>32MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <fileNamePattern>${fileBase}/archive/${SERVICE_LOG_FILE_NAME}-warn-%d{yyyy-MM-dd}-%i.log.gz
+            </fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="info_fileAsync" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>12</discardingThreshold>
+        <queueSize>1024</queueSize>
+        <includeCallerData>false</includeCallerData>
+        <appender-ref ref="info_fileAppender"/>
+    </appender>
+
+    <appender name="warn_fileAsync" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>12</discardingThreshold>
+        <queueSize>1024</queueSize>
+        <includeCallerData>true</includeCallerData>
+        <appender-ref ref="info_fileAppender"/>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_FILE_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Logger -->
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="info_fileAsync"/>
+        <appender-ref ref="warn_fileAsync"/>
+    </root>
+
+
+</configuration>
