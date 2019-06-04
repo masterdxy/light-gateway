@@ -101,6 +101,12 @@
             <version>${nacos.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.alibaba.nacos</groupId>
+            <artifactId>nacos-spring-context</artifactId>
+            <version>0.2.3-RC1</version>
+        </dependency>
+
 
         <!-- test -->
         <dependency>
@@ -153,15 +159,16 @@
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
-                                        <Main-Class>io.vertx.core.Launcher</Main-Class>
-                                        <Main-Verticle>com.github.masterdxy.gateway.GatewayVerticle</Main-Verticle>
+                                        <!--<Main-Class>io.vertx.core.Launcher</Main-Class>-->
+                                        <Main-Class>com.github.masterdxy.gateway.Bootstrap</Main-Class>
+                                        <!--<Main-Verticle>com.github.masterdxy.gateway.verticle.GatewayVerticle</Main-Verticle>-->
                                     </manifestEntries>
                                 </transformer>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                    <resource>META-INF/services/io.vertx.core.spi.VerticleFactory</resource>
-                                    <resource>META-INF/services/io.vertx.core.spi.launcher.CommandFactory</resource>
-                                </transformer>
+                                <!--<transformer-->
+                                        <!--implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">-->
+                                    <!--<resource>META-INF/services/io.vertx.core.spi.VerticleFactory</resource>-->
+                                    <!--<resource>META-INF/services/io.vertx.core.spi.launcher.CommandFactory</resource>-->
+                                <!--</transformer>-->
                             </transformers>
                             <artifactSet>
                             </artifactSet>
@@ -177,11 +184,12 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.5.0</version>
                 <configuration>
-                    <mainClass>io.vertx.core.Launcher</mainClass>
-                    <arguments>
-                        <argument>run</argument>
-                        <argument>com.github.masterdxy.gateway.GatewayVerticle</argument>
-                    </arguments>
+                    <!--<mainClass>io.vertx.core.Launcher</mainClass>-->
+                    <!--<arguments>-->
+                        <!--<argument>run</argument>-->
+                        <!--<argument>com.github.masterdxy.gateway.verticle.GatewayVerticle</argument>-->
+                    <!--</arguments>-->
+                    <mainClass>com.github.masterdxy.gateway.Bootstrap</mainClass>
                 </configuration>
             </plugin>
         </plugins>
