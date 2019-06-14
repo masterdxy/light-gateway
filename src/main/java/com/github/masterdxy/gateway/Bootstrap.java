@@ -1,9 +1,10 @@
 package com.github.masterdxy.gateway;
 
+import com.github.masterdxy.gateway.common.Constant;
 import com.github.masterdxy.gateway.config.GatewaySpringConfiguration;
 import com.github.masterdxy.gateway.spring.SpringContext;
 import com.github.masterdxy.gateway.verticle.GatewayVerticle;
-import com.github.masterdxy.gateway.verticle.SpringVerticleFactory;
+import com.github.masterdxy.gateway.spring.SpringVerticleFactory;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.impl.cpu.CpuCoreSensor;
@@ -21,7 +22,7 @@ public class Bootstrap {
       */
     public static void main(String[] args) {
         //switch vertx's logging delegate to slf4j.
-        System.setProperty("vertx.logger-delegate-factory-class-name", "io.vertx.core.logging.SLF4JLogDelegateFactory");
+        System.setProperty("vertx.logger-delegate-factory-class-name", Constant.LOGGER_FACTORY);
 
         //Build ApplicationContext before vertx startup.
         ApplicationContext context = SpringContext.initContext(GatewaySpringConfiguration.class);
@@ -46,10 +47,11 @@ public class Bootstrap {
         DeploymentOptions deploymentOptions = new DeploymentOptions();
         deploymentOptions.setInstances(CpuCoreSensor.availableProcessors());
         deploymentOptions.setWorkerPoolSize(CpuCoreSensor.availableProcessors() * 2);
-        deploymentOptions.setWorkerPoolName("gateway-work-pool");
+        deploymentOptions.setWorkerPoolName(Constant.WORKER_POOL_NAME);
 
         v.deployVerticle(verticleFactory.prefix() + ":" + GatewayVerticle.class.getName(), deploymentOptions);
 
+        //Register shutdown hook
 
         log.info("Started.");
     }

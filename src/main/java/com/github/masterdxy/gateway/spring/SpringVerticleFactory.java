@@ -1,5 +1,6 @@
-package com.github.masterdxy.gateway.verticle;
+package com.github.masterdxy.gateway.spring;
 
+import com.github.masterdxy.gateway.common.Constant;
 import io.vertx.core.Verticle;
 import io.vertx.core.spi.VerticleFactory;
 import org.springframework.beans.BeansException;
@@ -28,7 +29,7 @@ public class SpringVerticleFactory implements VerticleFactory, ApplicationContex
   @Override
   public String prefix() {
     // Just an arbitrary string which must uniquely identify the verticle factory
-    return "gateway";
+    return Constant.VERTICLE_PREFIX;
   }
 
   @Override

@@ -4,6 +4,7 @@ import io.vertx.ext.web.RoutingContext;
 
 public interface Plugin {
 
+    int order();
 
     boolean match(RoutingContext context);
 }
