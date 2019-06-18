@@ -12,7 +12,7 @@ public class AccessLogHandler implements Handler<RoutingContext> {
 
     private static final Logger logger = LoggerFactory.getLogger(AccessLogHandler.class);
     //todo config
-    private String format = "--> Remote IP :{}, Request URI :{}, Protocol Version :{}";
+    private static String format = "--> Remote IP :{}, Request URI :{}, Protocol Version :{}";
 
     @Override
     public void handle(RoutingContext context) {

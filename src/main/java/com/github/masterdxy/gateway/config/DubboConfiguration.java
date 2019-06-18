@@ -18,6 +18,7 @@ public class DubboConfiguration {
     private String registryAddress;
 
     //todo need use meta-data reporter to load iface method and param.
+    //todo if use meta-data , call $echo method after reference service init to check connection.
 
     private ApplicationConfig ac;
     private RegistryConfig rc;

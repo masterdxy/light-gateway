@@ -21,14 +21,13 @@ public class SpringContext {
     }
 
 
-
     public static <T> List<T> instances(Class<T> iCls) {
-        Map<String,T> maps = context.getBeansOfType(iCls);
-        if (maps == null || maps.isEmpty()){
+        Map<String, T> maps = context.getBeansOfType(iCls);
+        if (maps == null || maps.isEmpty()) {
             return Lists.newArrayList();
         }
         List<T> beanList = Lists.newArrayList();
-        maps.forEach((name,plugin)->{
+        maps.forEach((name, plugin) -> {
             beanList.add(plugin);
         });
         return beanList;

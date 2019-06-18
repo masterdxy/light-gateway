@@ -15,8 +15,8 @@
             <directory>src/main/resources</directory>
             <outputDirectory>conf</outputDirectory>
             <!--<includes>-->
-                <!--<include>**/*.properties</include>-->
-                <!--<include>**/*.xml</include>-->
+            <!--<include>**/*.properties</include>-->
+            <!--<include>**/*.xml</include>-->
             <!--</includes>-->
         </fileSet>
     </fileSets>

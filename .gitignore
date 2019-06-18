@@ -11,3 +11,4 @@ test-output
 target
 logs
 .vertx
+output

@@ -1,5 +1,6 @@
 package com.github.masterdxy.gateway.verticle;
 
+import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.github.masterdxy.gateway.handler.HandlerMapping;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
@@ -22,18 +23,21 @@ public class GatewayVerticle extends AbstractVerticle {
     @Autowired
     private HandlerMapping handlerMapping;
 
+    @NacosValue("${gateway.http.port}")
+    private int listenPort;
+
     @Override
     public void start(Future<Void> startFuture) throws Exception {
         //Build router and handlers
         Handler<HttpServerRequest> handler = handlerMapping.getHandler(vertx);
         vertx.createHttpServer()
-            .requestHandler(handler)
-            .listen(8080, (httpServerAsyncResult -> {
-                if (httpServerAsyncResult.succeeded())
-                    startFuture.complete();
-                else
-                    startFuture.fail(httpServerAsyncResult.cause());
-            }));
+                .requestHandler(handler)
+                .listen(listenPort, (httpServerAsyncResult -> {
+                    if (httpServerAsyncResult.succeeded())
+                        startFuture.complete();
+                    else
+                        startFuture.fail(httpServerAsyncResult.cause());
+                }));
     }
 
 }

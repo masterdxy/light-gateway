@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 
 public class ResponseBuilder {
 
-    public static String buildJson(int code,String msg,String data){
+    public static String buildJson(int code, String msg, String data) {
         GatewayResponse response = new GatewayResponse();
         response.setCode(code);
         response.setData(data);
@@ -12,7 +12,7 @@ public class ResponseBuilder {
         return JSON.toJSONString(response);
     }
 
-    public static String build(int code,String msg){
+    public static String build(int code, String msg) {
         GatewayResponse response = new GatewayResponse();
         response.setCode(code);
         response.setMsg(msg);

@@ -31,7 +31,7 @@ public class GenericServiceTest {
         GenericService service = reference.get();
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", "2");
-        Object result = service.$invoke("retrieve",new String[]{"com.jiaoma.service.sample.request.RetrieveRequest"},
+        Object result = service.$invoke("retrieve", new String[]{"com.jiaoma.service.sample.request.RetrieveRequest"},
                 new Object[]{params});
         System.out.println(JSON.toJSONString(result));
     }
@@ -39,10 +39,10 @@ public class GenericServiceTest {
     @Test
     void testMapToJson() {
         GatewayRequest req = new GatewayRequest();
-        Map<String,String> data = Maps.newHashMap();
-        data.put("id","2");
-        data.put("method","retrieve");
-        data.put("reqClass","com.jiaoma.service.sample.request.RetrieveRequest");
+        Map<String, String> data = Maps.newHashMap();
+        data.put("id", "2");
+        data.put("method", "retrieve");
+        data.put("reqClass", "com.jiaoma.service.sample.request.RetrieveRequest");
         req.setData(data);
         req.setNamespace("com.jiaoma.service.sample.api.CRUDService");
         req.setVersion("1.0.0");

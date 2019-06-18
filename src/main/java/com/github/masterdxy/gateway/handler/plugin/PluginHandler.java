@@ -40,7 +40,7 @@ public class PluginHandler implements Handler<RoutingContext> {
                                 if (asyncResult.result()) {
                                     JsonObject jsonObject = new JsonObject();
                                     Object pluginResult = context.get(Constant.PLUGIN_RESULT_KEY);
-                                    if (pluginResult != null){
+                                    if (pluginResult != null) {
                                         jsonObject.addProperty("result", JSON.toJSONString(pluginResult));
                                     }
                                     context.response().setStatusCode(200).end(jsonObject.toString());

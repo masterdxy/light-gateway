@@ -1,6 +1,6 @@
 <configuration debug="false" scan="true" scanPeriod="30 seconds">
 
-    <property resource="application.properties"/>
+    <property resource="application-dev.properties"/>
     <property name="SERVICE_LOG_FILE_NAME" value="${serviceName}"/>
     <property name="REQUEST_LOG_FILE_NAME" value="${serviceName}-access"/>
     <conversionRule conversionWord="hostName" converterClass="com.github.masterdxy.gateway.utils.LogbackUtils"/>

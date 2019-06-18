@@ -7,8 +7,7 @@ public class GatewayRequest {
     private String namespace;
     private String version;
 
-    private Map<String,String> data;
-
+    private Map<String, String> data;
 
 
     public String getNamespace() {
