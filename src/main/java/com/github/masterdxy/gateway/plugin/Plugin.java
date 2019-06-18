@@ -7,4 +7,6 @@ public interface Plugin {
     int order();
 
     boolean match(RoutingContext context);
+
+    boolean execute(RoutingContext context,PluginChain chain);
 }

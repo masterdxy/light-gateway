@@ -18,7 +18,7 @@ public class DubboConsumerTest {
 
 // Registry Info
         RegistryConfig registry = new RegistryConfig();
-        registry.setAddress("192.168.0.92:8848");
+        registry.setAddress("127.0.0.1:8848");
         registry.setProtocol("nacos");
 
 // NOTES: ReferenceConfig holds the connections to registry and providers, please cache it for performance.

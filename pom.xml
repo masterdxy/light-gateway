@@ -132,6 +132,30 @@
 
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <environment>dev</environment>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>test</id>
+            <properties>
+                <environment>test</environment>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <environment>prod</environment>
+            </properties>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
@@ -146,52 +170,42 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.4.3</version>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.github.masterdxy.gateway.Bootstrap</mainClass>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                        </manifest>
+                        <manifestEntries>
+                            <Class-Path>./</Class-Path>
+                        </manifestEntries>
+                    </archive>
+                    <excludes>
+                        <exclude>config/**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>src/assembly/assembly.xml</descriptors>
+                    <finalName>${project.artifactId}-${project.version}</finalName>
+                    <outputDirectory>${basedir}/output</outputDirectory>
+                    <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals>
-                            <goal>shade</goal>
+                            <goal>single</goal>
                         </goals>
-                        <configuration>
-                            <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <manifestEntries>
-                                        <!--<Main-Class>io.vertx.core.Launcher</Main-Class>-->
-                                        <Main-Class>com.github.masterdxy.gateway.Bootstrap</Main-Class>
-                                        <!--<Main-Verticle>com.github.masterdxy.gateway.verticle.GatewayVerticle</Main-Verticle>-->
-                                    </manifestEntries>
-                                </transformer>
-                                <!--<transformer-->
-                                        <!--implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">-->
-                                    <!--<resource>META-INF/services/io.vertx.core.spi.VerticleFactory</resource>-->
-                                    <!--<resource>META-INF/services/io.vertx.core.spi.launcher.CommandFactory</resource>-->
-                                <!--</transformer>-->
-                            </transformers>
-                            <artifactSet>
-                            </artifactSet>
-                            <outputFile>${project.build.directory}/${project.artifactId}-${project.version}-fat.jar
-                            </outputFile>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
 
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.5.0</version>
-                <configuration>
-                    <!--<mainClass>io.vertx.core.Launcher</mainClass>-->
-                    <!--<arguments>-->
-                        <!--<argument>run</argument>-->
-                        <!--<argument>com.github.masterdxy.gateway.verticle.GatewayVerticle</argument>-->
-                    <!--</arguments>-->
-                    <mainClass>com.github.masterdxy.gateway.Bootstrap</mainClass>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
