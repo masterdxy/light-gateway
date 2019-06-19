@@ -28,8 +28,8 @@ public class HandlerMapping {
 
     public Handler<HttpServerRequest> getHandler(Vertx vertx) {
         Router router = Router.router(vertx);
-        //Load route mapping from nacos config center.
-        //UpstreamHandler Endpoint.
+        //Load route endpoint from nacos config center.
+        //UpstreamHandler EndpointConfig.
 
         router.post("/api/*").
                 produces("application/json").
