@@ -3,6 +3,7 @@ package com.github.masterdxy.gateway.plugin;
 import com.github.masterdxy.gateway.spring.SpringContext;
 import io.vertx.ext.web.RoutingContext;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class PluginChain {
@@ -11,19 +12,34 @@ public class PluginChain {
     private List<Plugin> plugins;
     private RoutingContext context;
 
+    /*
+    EndpointSelector -> AuthPlugin
+                            -> RateLimitPlugin
+                                    |->  DubboPlugin
+                                    |->  RewritePlugin  ->  LBPlugin  ->  HttpPlugin
+
+    context modify :
+        EndpointSelector (add GATEWAY_ENDPOINT)
+        AuthPlugin (add GATEWAY_AUTH)
+
+     */
+
     public boolean execute() {
         if (index < plugins.size()) {
             Plugin plugin = plugins.get(index++);
-            return plugin.execute(context, this);
+            if (plugin.match(context))
+                return plugin.execute(context, this);
+            execute();
         }
         return true;
     }
 
     public static PluginChain build(RoutingContext context) {
+        List<Plugin> plugins = SpringContext.instances(Plugin.class);
+        plugins.sort(Comparator.comparingInt(Plugin::order));
         PluginChain chain = new PluginChain();
         chain.setContext(context);
-        chain.setIndex(0);
-        chain.setPlugins(SpringContext.instances(Plugin.class));
+        chain.setPlugins(plugins);
         return chain;
     }
 

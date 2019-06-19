@@ -27,8 +27,8 @@ public class SpringContext {
             return Lists.newArrayList();
         }
         List<T> beanList = Lists.newArrayList();
-        maps.forEach((name, plugin) -> {
-            beanList.add(plugin);
+        maps.forEach((name, bean) -> {
+            beanList.add(bean);
         });
         return beanList;
     }

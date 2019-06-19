@@ -6,11 +6,11 @@ import io.vertx.ext.web.RoutingContext;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AuthPlugin implements Plugin {
+public class LoadBalancePlugin implements Plugin {
 
     @Override
     public int order() {
-        return -90;
+        return -60;
     }
 
     @Override
