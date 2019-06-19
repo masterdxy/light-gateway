@@ -7,8 +7,11 @@ import com.github.masterdxy.gateway.spring.SpringVerticleFactory;
 import com.github.masterdxy.gateway.verticle.GatewayVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
 import io.vertx.core.impl.cpu.CpuCoreSensor;
 import io.vertx.core.spi.VerticleFactory;
+import io.vertx.micrometer.MicrometerMetricsOptions;
+import io.vertx.micrometer.VertxPrometheusOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -32,7 +35,11 @@ public class Bootstrap {
         //Make Dubbo generic client cache
 
         //Create vertx
-        Vertx v = Vertx.vertx();
+        Vertx v = Vertx.vertx(new VertxOptions().setMetricsOptions(
+                new MicrometerMetricsOptions()
+                        .setPrometheusOptions(new VertxPrometheusOptions().setEnabled(true))
+                        .setEnabled(true)));
+
 
         //Register vertx event bus and consumer
 

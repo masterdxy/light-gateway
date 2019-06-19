@@ -12,11 +12,14 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.micrometer.PrometheusScrapingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
+@Lazy(value = false)
 public class HandlerMapping {
 
     private static final Logger logger = LoggerFactory.getLogger(HandlerMapping.class);
@@ -28,13 +31,11 @@ public class HandlerMapping {
 
     public Handler<HttpServerRequest> getHandler(Vertx vertx) {
         Router router = Router.router(vertx);
-        //Load route endpoint from nacos config center.
-        //UpstreamHandler EndpointConfig.
 
-        router.post("/api/*").
+        //Api
+        router.route("/api/*").
                 produces("application/json").
-                consumes("application/json").
-                handler(BodyHandler.create(false)).
+                handler(BodyHandler.create(false)).                           //parse body
                 handler(SpringContext.instance(RequestParserHandler.class)).
                 handler(SpringContext.instance(TraceHandler.class)).          //Before Handler
                 handler(SpringContext.instance(AccessLogHandler.class)).
@@ -43,10 +44,17 @@ public class HandlerMapping {
                 failureHandler(SpringContext.instance(ErrorHandler.class));   //Error Handler
 
 
+        //Dynamic manage gateway
         router.get("/mgr/*").handler((context -> {
             logger.info("=== MGR /* ");
             context.next();
         }));
+
+
+        //Prometheus metrics export
+        router.route("/metrics").handler(PrometheusScrapingHandler.create());
+
+
         return router;
     }
 }
