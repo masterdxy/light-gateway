@@ -39,8 +39,8 @@ public class HandlerMapping {
                 handler(SpringContext.instance(RequestParserHandler.class)).
                 handler(SpringContext.instance(TraceHandler.class)).          //Before Handler
                 handler(SpringContext.instance(AccessLogHandler.class)).
-                handler(SpringContext.instance(PluginHandler.class)).         //Plugin Handler
                 handler(SpringContext.instance(ResponseTimeHandler.class)).   //AfterHandler
+                handler(SpringContext.instance(PluginHandler.class)).         //Plugin Handler
                 failureHandler(SpringContext.instance(ErrorHandler.class));   //Error Handler
 
 
