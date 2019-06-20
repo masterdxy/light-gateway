@@ -1,14 +1,28 @@
 package com.github.masterdxy.gateway.plugin.impl;
 
 import com.github.masterdxy.gateway.common.Constant;
+import com.github.masterdxy.gateway.common.EndpointConfig;
 import com.github.masterdxy.gateway.plugin.Plugin;
 import com.github.masterdxy.gateway.plugin.PluginChain;
+import com.github.masterdxy.gateway.plugin.endpoint.EndpointMatcher;
 import com.github.masterdxy.gateway.protocol.v1.GatewayRequest;
 import io.vertx.ext.web.RoutingContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component
+@Lazy(value = false)
 public class EndpointSelectorPlugin implements Plugin {
+
+    private static Logger logger = LoggerFactory.getLogger(EndpointSelectorPlugin.class);
+
+    @Autowired
+    private EndpointMatcher endpointMatcher;
 
     @Override
     public int order() {
@@ -24,12 +38,19 @@ public class EndpointSelectorPlugin implements Plugin {
 
     @Override
     public boolean execute(RoutingContext context, PluginChain chain) {
-        GatewayRequest request = context.get(Constant.GATEWAY_REQUEST_KEY);
-        if (request != null) {
+        //request is never null here.
+        GatewayRequest request = Objects.requireNonNull(context.get(Constant.GATEWAY_REQUEST_KEY));
+        //resolve upstream type
+        EndpointConfig endpointConfig = endpointMatcher.match(request);
 
-        } else {
-            context.put(Constant.PLUGIN_RESULT_KEY, "GatewayRequest is null");
+        if (endpointConfig == null) {
+            logger.warn("EndpointSelector :{}, requestUri :{}", "Endpoint not found",context.request().absoluteURI());
+            context.put(Constant.PLUGIN_ERROR_MESSAGE_KEY, "Endpoint not found.");
+            return false;
         }
+
+        //set endpoint config into context
+        context.put(Constant.ENDPOINT_CONFIG,endpointConfig);
         return false;
     }
 }
