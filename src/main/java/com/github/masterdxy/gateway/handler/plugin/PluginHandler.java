@@ -9,12 +9,14 @@ import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 /*
 Execute plugin chain
  */
 @Component
+@Lazy(value = false)
 public class PluginHandler implements Handler<RoutingContext> {
     private static Logger logger = LoggerFactory.getLogger(PluginHandler.class);
 
@@ -30,12 +32,11 @@ public class PluginHandler implements Handler<RoutingContext> {
                             future.complete(result);
                         },
                         asyncResult -> {
-                            logger.info("Finish running blocking code [chain.execute()] ,successed :{}", asyncResult.succeeded());
+                            logger.info("Finish running blocking code [chain.execute()] ,success :{}",
+                                    asyncResult.succeeded());
                             if (!asyncResult.succeeded()) {
                                 logger.error("PluginChain execute failed, cause : {}", asyncResult.cause());
-                                JsonObject jsonObject = new JsonObject();
-                                jsonObject.addProperty("err_msg", asyncResult.cause().getMessage());
-                                context.response().setStatusCode(400).end(jsonObject.toString());
+                                context.fail(500, asyncResult.cause());
                             } else {
                                 if (asyncResult.result()) {
                                     JsonObject jsonObject = new JsonObject();
@@ -46,9 +47,9 @@ public class PluginHandler implements Handler<RoutingContext> {
                                     context.response().setStatusCode(200).end(jsonObject.toString());
                                 } else {
                                     String pluginResult = context.get(Constant.PLUGIN_ERROR_MESSAGE_KEY);
-                                    JsonObject jsonObject = new JsonObject();
-                                    jsonObject.addProperty("err_msg", pluginResult);
-                                    context.response().setStatusCode(400).end(jsonObject.toString());
+                                    logger.error("PluginChain execute success, but return false, msg : {}",
+                                            pluginResult);
+                                    context.fail(400, new RuntimeException(pluginResult));
                                 }
                             }
                         });
