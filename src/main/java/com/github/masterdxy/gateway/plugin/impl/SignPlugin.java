@@ -12,17 +12,17 @@ import java.util.Objects;
 
 @Component
 @Lazy(value = false)
-public class AuthPlugin implements Plugin {
+public class SignPlugin implements Plugin {
 
     @Override
     public int order() {
-        return -90;
+        return -95;
     }
 
     @Override
     public boolean match(RoutingContext context) {
         EndpointConfig endpointConfig = Objects.requireNonNull(context.get(Constant.ENDPOINT_CONFIG));
-        return endpointConfig.isNeedAuth();
+        return endpointConfig.isNeedSign();
     }
 
     @Override
