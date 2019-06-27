@@ -10,9 +10,19 @@ public final class Constant {
 
     //Context Key
     public static final String GATEWAY_REQUEST_KEY = "gr";
+    public static final String ENDPOINT_CONFIG = "epc";
+
+
+
     public static final String PLUGIN_RESULT_KEY = "plugin_result";
     public static final String PLUGIN_ERROR_MESSAGE_KEY = "plugin_error_msg";
     public static final String PLUGIN_ERROR_THROW_OBJ_KEY = "plugin_error_throwable";
+
+
+
+
+    //Headers
+    public static final String HEADER_RESPONSE_TIME = "gateway-response-time";
 
 
 }
