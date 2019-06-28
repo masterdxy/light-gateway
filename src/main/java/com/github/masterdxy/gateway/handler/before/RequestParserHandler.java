@@ -10,9 +10,11 @@ import io.vertx.ext.web.RoutingContext;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
+@Lazy(value = false)
 public class RequestParserHandler implements Handler<RoutingContext> {
 
     private static Logger logger = LoggerFactory.getLogger(RequestParserHandler.class);
@@ -30,6 +32,7 @@ public class RequestParserHandler implements Handler<RoutingContext> {
                 context.response().end(ResponseBuilder.build(400, "POST data empty."));
             }
         } else {
+            //todo parse GET url params to gwr.
             context.response().end(ResponseBuilder.build(400, "Only support POST method."));
         }
     }
