@@ -2,23 +2,17 @@ package com.github.masterdxy.gateway;
 
 import com.github.masterdxy.gateway.common.Constant;
 import com.github.masterdxy.gateway.config.GatewaySpringConfiguration;
+import com.github.masterdxy.gateway.config.VertxInitialization;
 import com.github.masterdxy.gateway.spring.SpringContext;
-import com.github.masterdxy.gateway.spring.SpringVerticleFactory;
-import com.github.masterdxy.gateway.verticle.GatewayVerticle;
-import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
-import io.vertx.core.impl.cpu.CpuCoreSensor;
-import io.vertx.core.spi.VerticleFactory;
-import io.vertx.micrometer.MicrometerMetricsOptions;
-import io.vertx.micrometer.VertxPrometheusOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 
 public class Bootstrap {
 
     private static Logger log = LoggerFactory.getLogger(Bootstrap.class);
+
+    private static Vertx vertx;
 
     /*
      For local test only.
@@ -28,38 +22,14 @@ public class Bootstrap {
         System.setProperty("vertx.logger-delegate-factory-class-name", Constant.LOGGER_FACTORY);
 
         //Build ApplicationContext before vertx startup.
-        ApplicationContext context = SpringContext.initContext(GatewaySpringConfiguration.class);
+        SpringContext.initContext(GatewaySpringConfiguration.class);
 
-        //Load nacos config
-
-        //Make Dubbo generic client cache
-
-        //Create vertx
-        Vertx v = Vertx.vertx(new VertxOptions().setMetricsOptions(
-                new MicrometerMetricsOptions()
-                        .setPrometheusOptions(new VertxPrometheusOptions().setEnabled(true))
-                        .setEnabled(true)));
-
-
-        //Register vertx event bus and consumer
-
-
-        //Deploy gate's verticle
-        VerticleFactory verticleFactory = context.getBean(SpringVerticleFactory.class);
-
-        // The verticle factory is registered manually because it is created by the Spring container
-        v.registerVerticleFactory(verticleFactory);
-
-        // Scale the verticles on cores: create 4 instances during the deployment
-        DeploymentOptions deploymentOptions = new DeploymentOptions();
-        deploymentOptions.setInstances(CpuCoreSensor.availableProcessors());
-        deploymentOptions.setWorkerPoolSize(CpuCoreSensor.availableProcessors() * 2);
-        deploymentOptions.setWorkerPoolName(Constant.WORKER_POOL_NAME);
-
-        v.deployVerticle(verticleFactory.prefix() + ":" + GatewayVerticle.class.getName(), deploymentOptions);
+        //Init vertx.
+        VertxInitialization vertxInitialization = SpringContext.instance(VertxInitialization.class);
+        vertxInitialization.initialization();
 
         //Register shutdown hook
-
+        Runtime.getRuntime().addShutdownHook(new Thread(vertxInitialization::stop,"GatewayShutdownHook"));
         log.info("Started.");
     }
 }

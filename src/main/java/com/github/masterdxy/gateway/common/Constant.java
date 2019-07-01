@@ -1,9 +1,14 @@
 package com.github.masterdxy.gateway.common;
 
 public final class Constant {
+
+    //Vertx
     public static final String LOGGER_FACTORY = "io.vertx.core.logging.SLF4JLogDelegateFactory";
     public static final String VERTICLE_PREFIX = "gateway";
     public static final String WORKER_POOL_NAME = "gateway-work-pool";
+    public static final int DELAY_TRY_LOCK = 1000 * 60;
+    public static final int DELAY_LOAD_EPC = 1000 * 30;
+
 
     public static final String DUBBO_CONSUMER_APPLICATION_NAME = "gateway-consumer";
 
@@ -23,6 +28,13 @@ public final class Constant {
 
     //Headers
     public static final String HEADER_RESPONSE_TIME = "gateway-response-time";
+
+
+    //Datasource
+
+
+    //HAZELCAST Key
+    public static final String HAZELCAST_EPC_MAP_KEY = "hazelcast_epc_map";
 
 
 }
