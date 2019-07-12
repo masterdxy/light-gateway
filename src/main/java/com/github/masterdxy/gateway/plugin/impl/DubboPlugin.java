@@ -11,9 +11,11 @@ import io.vertx.ext.web.RoutingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
+@Lazy(value = false)
 public class DubboPlugin implements Plugin {
 
     private static final Logger logger = LoggerFactory.getLogger(DubboPlugin.class);
@@ -23,12 +25,12 @@ public class DubboPlugin implements Plugin {
 
     @Override
     public int order() {
-        return 0;
+        return -60;
     }
 
     @Override
     public boolean match(RoutingContext context) {
-        //check context
+        //only match dubbo upstream
         return true;
     }
 
@@ -39,8 +41,7 @@ public class DubboPlugin implements Plugin {
         //invoke chain next;
         GatewayRequest request = context.get(Constant.GATEWAY_REQUEST_KEY);
             GenericService service = dubboConfiguration.getDubboService(request.getNamespace(), request.getVersion());
-            Object object = service.$invoke(request.getData().remove("method"), new String[]{request.getData().remove(
-                    "reqClass")},
+            Object object = service.$invoke(request.getMethod(), null,
                     new Object[]{request.getData()});
             logger.info("DubboPlugin execute result : {}", object);
             context.put(Constant.PLUGIN_RESULT_KEY, object);
