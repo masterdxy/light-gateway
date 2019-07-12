@@ -3,6 +3,7 @@ package com.github.masterdxy.gateway.verticle;
 import com.github.masterdxy.gateway.common.Constant;
 import com.github.masterdxy.gateway.common.EndpointConfig;
 import com.github.masterdxy.gateway.common.dao.EndpointConfigDao;
+import com.github.masterdxy.gateway.config.DubboConfiguration;
 import com.github.masterdxy.gateway.config.VertxInitialization;
 import com.github.masterdxy.gateway.plugin.endpoint.EndpointManager;
 import com.google.common.collect.Maps;
@@ -47,6 +48,8 @@ public class ManagerVerticle extends AbstractVerticle {
     private VertxInitialization vertxInitialization;
     @Autowired
     private HazelcastInstance hazelcastInstance;
+    @Autowired
+    private DubboConfiguration dubboConfiguration;
 
     private EndpointConfigDao endpointConfigDao;
 
@@ -90,6 +93,9 @@ public class ManagerVerticle extends AbstractVerticle {
             lock(this.lock);
             logger.info("4.Loading Epc .... ");
             loadEpc();
+            logger.info("5.Load Dubbo Service ...");
+            int serviceCount = dubboConfiguration.initDubboGenericService();
+            logger.info("5.Loaded {} Dubbo Service.", serviceCount);
             countDownLatch.countDown();
         }
 
@@ -98,9 +104,9 @@ public class ManagerVerticle extends AbstractVerticle {
             return Scheduler.newFixedDelaySchedule(0, Constant.DELAY_LOAD_EPC, TimeUnit.MILLISECONDS);
         }
 
-        protected void awaitFirstTimeRun(){
+        protected void awaitFirstTimeRun() {
             try {
-                countDownLatch.await(1000,TimeUnit.MILLISECONDS);
+                countDownLatch.await(1000, TimeUnit.MILLISECONDS);
             } catch (InterruptedException ignore) {
             }
         }
