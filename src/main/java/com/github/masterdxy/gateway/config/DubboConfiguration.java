@@ -42,7 +42,15 @@ public class DubboConfiguration {
     private ApplicationConfig ac;
     private RegistryConfig rc;
     private ConcurrentMap<String, GenericService> cache = Maps.newConcurrentMap();
+    //prevent reference-config destroy warn log.
+    private ConcurrentMap<String, ReferenceConfig<GenericService>> referenceConfigConcurrentMap =
+            Maps.newConcurrentMap();
     private BiFunction<String, String, GenericService> serviceLoader = (iFaceName, version) -> {
+        ReferenceConfig<GenericService> referenceConfig =
+                referenceConfigConcurrentMap.get(iFaceName + ":" + version);
+        if (referenceConfig != null) {
+            return referenceConfig.get();
+        }
         if (ac == null || rc == null) {
             synchronized (this) {
                 ac = new ApplicationConfig();
@@ -62,9 +70,10 @@ public class DubboConfiguration {
         reference.setGeneric(true);
         reference.setRetries(0);
         reference.setApplication(ac);
+        reference.setCheck(false);
         reference.setProtocol(Constant.DUBBO_PROTOCOL_DUBBO);
+        referenceConfigConcurrentMap.put(iFaceName + ":" + version, reference);
         //todo add consumer config improve performance e.g. share connections and thread pool size.
-
         return reference.get();
     };
 
@@ -104,7 +113,7 @@ public class DubboConfiguration {
                                 serviceDefinition.getParameters().getOrDefault(Constants.VERSION_KEY, "1.0.0"));
                     }
                 } catch (Exception e) {
-                    logger.warn("metadata load error", e.getMessage());
+                    logger.error("metadata load error", e);
                 }
             });
         } finally {
