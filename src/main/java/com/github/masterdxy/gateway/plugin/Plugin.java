@@ -8,5 +8,5 @@ public interface Plugin {
 
     boolean match(RoutingContext context);
 
-    boolean execute(RoutingContext context, PluginChain chain);
+    PluginResult execute(RoutingContext context, PluginChain chain);
 }

@@ -30,17 +30,19 @@ public class PluginChain {
 
      */
 
-    public boolean execute() {
+    public PluginResult execute() {
         if (index < plugins.size()) {
             Plugin plugin = plugins.get(index++);
             if (plugin.match(context))
                 return plugin.execute(context, this);
             execute();
         }
-        return true;
+        //todo handle no result returned .
+        throw new IllegalStateException("plugin chain");
     }
 
     public static PluginChain build(RoutingContext context) {
+        //todo cache plugins.
         List<Plugin> plugins = SpringContext.instances(Plugin.class);
         plugins.sort(Comparator.comparingInt(Plugin::order));
         logger.info("Plugins : {}", plugins.stream().map(p -> ClassUtils.getShortClassName(p, "null"
