@@ -1,4 +1,4 @@
-package com.github.masterdxy.gateway.config;
+package com.github.masterdxy.gateway.plugin.impl.dubbo;
 
 import org.apache.dubbo.common.Constants;
 import org.apache.dubbo.config.ApplicationConfig;
@@ -18,16 +18,16 @@ import io.lettuce.core.api.sync.RedisCommands;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
-@Configuration
-public class DubboConfiguration {
+@Component
+public class DubboServiceProvider {
 
     @NacosValue("${gateway.dubbo.registry}")
     private String registryAddress;
@@ -35,19 +35,22 @@ public class DubboConfiguration {
     @Autowired
     private RedisClient redisClient;
 
-    private static Logger logger = LoggerFactory.getLogger(DubboConfiguration.class);
+    private static Logger logger = LoggerFactory.getLogger(DubboServiceProvider.class);
 
-    //TODO move to other package.
-    //TODO metadata clean up.
+    //TODO metadata clean up supported by service provider
     private ApplicationConfig ac;
+
     private RegistryConfig rc;
-    private ConcurrentMap<String, GenericService> cache = Maps.newConcurrentMap();
-    //prevent reference-config destroy warn log.
-    private ConcurrentMap<String, ReferenceConfig<GenericService>> referenceConfigConcurrentMap =
+
+    private ConcurrentMap<DubboServiceIdentity, DubboProxyService> cache = Maps.newConcurrentMap();
+
+    //to prevent reference-config destroy warn log.
+    private ConcurrentMap<DubboServiceIdentity, ReferenceConfig<GenericService>> referenceConfigConcurrentMap =
             Maps.newConcurrentMap();
-    private BiFunction<String, String, GenericService> serviceLoader = (iFaceName, version) -> {
+
+    private Function<DubboServiceIdentity, GenericService> serviceLoader = (serviceIdentity) -> {
         ReferenceConfig<GenericService> referenceConfig =
-                referenceConfigConcurrentMap.get(iFaceName + ":" + version);
+                referenceConfigConcurrentMap.get(serviceIdentity);
         if (referenceConfig != null) {
             return referenceConfig.get();
         }
@@ -61,29 +64,34 @@ public class DubboConfiguration {
             }
         }
         ReferenceConfig<GenericService> reference = new ReferenceConfig<GenericService>();
-        reference.setInterface(iFaceName);
-        reference.setVersion(version);
+        reference.setInterface(serviceIdentity.getInterfaceName());
+        reference.setVersion(serviceIdentity.getVersion());
         Map<String, String> map = Maps.newHashMap();
-        //every 1s try to reconnect target provider
-        map.put(Constants.HEARTBEAT_KEY, String.valueOf(1000));
+        map.put(Constants.HEARTBEAT_KEY, String.valueOf(1000));     //every 1s try to reconnect target provider
         reference.setParameters(map);
         reference.setGeneric(true);
         reference.setRetries(0);
         reference.setApplication(ac);
-        reference.setCheck(false);
+        reference.setCheck(false);//prevent no provider found exception.
         reference.setProtocol(Constant.DUBBO_PROTOCOL_DUBBO);
-        referenceConfigConcurrentMap.put(iFaceName + ":" + version, reference);
+        referenceConfigConcurrentMap.put(serviceIdentity, reference);
         //todo add consumer config improve performance e.g. share connections and thread pool size.
         return reference.get();
     };
 
-    public GenericService getDubboService(String interfaceName, String version) {
-        GenericService service = cache.get(interfaceName + ":" + version);
-        if (service == null) {
-            service = serviceLoader.apply(interfaceName, version);
-            cache.put(interfaceName + ":" + version, service);
+    //only use cache, service init by locatingDubboService()
+    DubboProxyService getDubboService(DubboServiceIdentity serviceIdentity) {
+        return cache.get(serviceIdentity);
+    }
+
+    private DubboProxyService locatingDubboService(DubboServiceIdentity serviceIdentity) {
+        DubboProxyService proxyService = cache.get(serviceIdentity);
+        if (proxyService == null) {
+            GenericService genericService = serviceLoader.apply(serviceIdentity);
+            proxyService = DubboProxyService.wrap(serviceIdentity, genericService);
+            cache.put(serviceIdentity, proxyService);
         }
-        return service;
+        return proxyService;
     }
 
     public int initDubboGenericService() {
@@ -104,13 +112,13 @@ public class DubboConfiguration {
                 String defStr = stringStringKeyValue.getValue();
                 try {
                     FullServiceDefinition serviceDefinition = JSON.parseObject(defStr, FullServiceDefinition.class);
-                    GenericService service = getDubboService(serviceDefinition.getCanonicalName(),
-                            serviceDefinition.getParameters().getOrDefault(Constants.VERSION_KEY, "1.0.0"));
+                    String version = serviceDefinition.getParameters().getOrDefault(Constants.VERSION_KEY, "1.0.0");
+                    DubboProxyService service =
+                            locatingDubboService(DubboServiceIdentity.as(serviceDefinition.getCanonicalName(), version));
                     if (service != null) {
                         loaded.incrementAndGet();
                         logger.info("metadata load success, service :{}, version :{}",
-                                serviceDefinition.getCanonicalName(),
-                                serviceDefinition.getParameters().getOrDefault(Constants.VERSION_KEY, "1.0.0"));
+                                serviceDefinition.getCanonicalName(), version);
                     }
                 } catch (Exception e) {
                     logger.error("metadata load error", e);
