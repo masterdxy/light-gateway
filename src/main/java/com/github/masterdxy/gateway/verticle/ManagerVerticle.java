@@ -1,11 +1,15 @@
 package com.github.masterdxy.gateway.verticle;
 
+import org.apache.dubbo.common.utils.NetUtils;
+
+import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.github.masterdxy.gateway.common.Constant;
-import com.github.masterdxy.gateway.common.EndpointConfig;
+import com.github.masterdxy.gateway.common.Endpoint;
 import com.github.masterdxy.gateway.common.dao.EndpointConfigDao;
-import com.github.masterdxy.gateway.config.DubboConfiguration;
 import com.github.masterdxy.gateway.config.VertxInitialization;
+import com.github.masterdxy.gateway.handler.HandlerMapping;
 import com.github.masterdxy.gateway.plugin.endpoint.EndpointManager;
+import com.github.masterdxy.gateway.plugin.impl.dubbo.DubboServiceProvider;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.AbstractScheduledService;
 import com.hazelcast.core.HazelcastInstance;
@@ -13,6 +17,10 @@ import com.hazelcast.core.ILock;
 import com.hazelcast.core.IMap;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.net.SocketAddress;
+import org.apache.commons.lang3.StringUtils;
 import org.jfaster.mango.operator.Mango;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +57,14 @@ public class ManagerVerticle extends AbstractVerticle {
     @Autowired
     private HazelcastInstance hazelcastInstance;
     @Autowired
-    private DubboConfiguration dubboConfiguration;
+    private DubboServiceProvider dubboServiceProvider;
+    @Autowired
+    private HandlerMapping handlerMapping;
+
+    @NacosValue("${gateway.bind.port:8080}")
+    private int bindPort;
+    @NacosValue("${gateway.bind.host:}")
+    private String bindHost;
 
     private EndpointConfigDao endpointConfigDao;
 
@@ -73,8 +88,23 @@ public class ManagerVerticle extends AbstractVerticle {
         epcLoaderService.startAsync().awaitRunning();
         //execute once before scheduler started.
         epcLoaderService.awaitFirstTimeRun();
+        //Build router and handlers
+        Handler<HttpServerRequest> handler = handlerMapping.getManagerHandler(vertx);
+        if (StringUtils.isEmpty(bindHost)) {
+            logger.warn("bind host is null, trying fetch an ip.");
+            bindHost = NetUtils.getLocalHost();
+        }
+        SocketAddress bindAddress = SocketAddress.inetSocketAddress(bindPort, bindHost);
+        logger.info("Manager is bind to {}", bindAddress.toString());
+        vertx.createHttpServer().requestHandler(handler)
+                .listen(bindAddress, (httpServerAsyncResult -> {
+                    if (httpServerAsyncResult.succeeded())
+                        startFuture.complete();
+                    else
+                        startFuture.fail(httpServerAsyncResult.cause());
+                }));
 
-        startFuture.complete();
+//        startFuture.complete();
     }
 
     private class EPCLoaderService extends AbstractScheduledService {
@@ -82,7 +112,7 @@ public class ManagerVerticle extends AbstractVerticle {
         private ILock lock;
         private CountDownLatch countDownLatch;
 
-        public EPCLoaderService(ILock lock) {
+        EPCLoaderService(ILock lock) {
             this.lock = lock;
             countDownLatch = new CountDownLatch(1);
         }
@@ -94,8 +124,9 @@ public class ManagerVerticle extends AbstractVerticle {
             logger.info("4.Loading Epc .... ");
             loadEpc();
             logger.info("5.Load Dubbo Service ...");
-            int serviceCount = dubboConfiguration.initDubboGenericService();
+            int serviceCount = dubboServiceProvider.initDubboGenericService();
             logger.info("5.Loaded {} Dubbo Service.", serviceCount);
+            VertxInitialization.started = true;
             countDownLatch.countDown();
         }
 
@@ -104,16 +135,15 @@ public class ManagerVerticle extends AbstractVerticle {
             return Scheduler.newFixedDelaySchedule(0, Constant.DELAY_LOAD_EPC, TimeUnit.MILLISECONDS);
         }
 
-        protected void awaitFirstTimeRun() {
+        void awaitFirstTimeRun() {
             try {
-                countDownLatch.await(1000, TimeUnit.MILLISECONDS);
+                countDownLatch.await(5000, TimeUnit.MILLISECONDS);
             } catch (InterruptedException ignore) {
             }
         }
     }
 
     private void lock(ILock iLock) {
-        //✅ this method may block the event-loop thread.
         try {
             if (iLock.isLocked()) {
                 if (iLock.isLockedByCurrentThread()) {
@@ -135,35 +165,28 @@ public class ManagerVerticle extends AbstractVerticle {
                     logger.info("current lock is not locked, try lock timeout, wait next period");
                 }
             }
-
-//       vertx.setTimer(Constant.DELAY_TRY_LOCK, timerId -> lock(iLock));
         } catch (Exception e) {
             logger.warn("Periodic lock task error", e);
         }
     }
 
     private void loadEpc() {
-        //✅ this method may block the event-loop thread.
         if (hasLock) {
             logger.info("load epc from MySQL store with lock ...");
-            Map<String, EndpointConfig> endpointConfigMap = Maps.newConcurrentMap();
-            List<EndpointConfig> allEpc = endpointConfigDao.findAll();
+            Map<String, Endpoint> endpointConfigMap = Maps.newConcurrentMap();
+            List<Endpoint> allEpc = endpointConfigDao.findAll();
             allEpc.forEach(epc -> endpointConfigMap.put(epc.getUri(), epc));
             hazelcastInstance.getMap(Constant.HAZELCAST_EPC_MAP_KEY).putAll(endpointConfigMap);
             endpointManager.updateEpcMap(endpointConfigMap);
         } else {
             logger.info("load epc from K/V store without lock ...");
-            IMap<String, EndpointConfig> iMap = hazelcastInstance.getMap(Constant.HAZELCAST_EPC_MAP_KEY);
+            IMap<String, Endpoint> iMap = hazelcastInstance.getMap(Constant.HAZELCAST_EPC_MAP_KEY);
             Set<String> keySet = iMap.keySet();
-            Map<String, EndpointConfig> endpointConfigMap = Maps.newConcurrentMap();
+            Map<String, Endpoint> endpointConfigMap = Maps.newConcurrentMap();
             keySet.forEach(key -> endpointConfigMap.put(key, iMap.get(key)));
             endpointManager.updateEpcMap(endpointConfigMap);
         }
 
-//        vertx.setTimer(Constant.DELAY_LOAD_EPC, timerId -> {
-//            periodicLoadEpcTimerId = timerId;
-//            loadEpc();
-//        });
     }
 
 
