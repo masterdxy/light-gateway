@@ -15,6 +15,10 @@
         <micrometer.version>1.1.0</micrometer.version>
         <dubbo.version>2.7.1</dubbo.version>
         <nacos.version>0.9.0</nacos.version>
+        <jmango.version>1.6.1</jmango.version>
+        <jmango-starter.version>2.0.1</jmango-starter.version>
+        <hikaricp.version>2.7.9</hikaricp.version>
+        <mysql-connector.version>5.1.38</mysql-connector.version>
         <slf4j.version>1.7.25</slf4j.version>
         <log4j.version>2.11.1</log4j.version>
         <logback.version>1.2.3</logback.version>
@@ -51,6 +55,13 @@
             <artifactId>vertx-micrometer-metrics</artifactId>
             <version>${vertx.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-hazelcast</artifactId>
+            <version>3.6.3</version>
+        </dependency>
+
 
         <dependency>
             <groupId>io.micrometer</groupId>
@@ -126,6 +137,35 @@
             <version>5.0.5.RELEASE</version>
         </dependency>
 
+        <!-- database & orm -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql-connector.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jfaster</groupId>
+            <artifactId>mango</artifactId>
+            <version>${jmango.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>mockito-core</artifactId>
+                    <groupId>org.mockito</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>${hikaricp.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jfaster</groupId>
+            <artifactId>mango-spring-boot-starter</artifactId>
+            <version>${jmango-starter.version}</version>
+        </dependency>
+        <!-- database & orm end-->
+
 
         <!-- test -->
         <dependency>
@@ -147,6 +187,17 @@
             <artifactId>junit-jupiter-params</artifactId>
             <version>${junit-jupiter.version}</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.vladimir-bukhtoyarov</groupId>
+            <artifactId>bucket4j-core</artifactId>
+            <version>4.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.vladimir-bukhtoyarov</groupId>
+            <artifactId>bucket4j-hazelcast</artifactId>
+            <version>4.4.1</version>
         </dependency>
 
     </dependencies>
