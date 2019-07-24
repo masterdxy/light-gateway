@@ -1,7 +1,7 @@
 package com.github.masterdxy.gateway.handler.error;
 
 import com.alibaba.nacos.api.config.annotation.NacosValue;
-import com.github.masterdxy.gateway.protocol.v1.ResponseBuilder;
+import com.github.masterdxy.gateway.protocol.v1.GatewayResponse;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 import org.slf4j.Logger;
@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 @Lazy(value = false)
 public class ErrorHandler implements Handler<RoutingContext> {
 
-    @NacosValue("${gateway.error.detail:true}")
-    private boolean showDetailMsg;
+    @NacosValue("${gateway.debug:true}")
+    private boolean debug;
 
     @NacosValue("${gateway.error.msg:Server Error}")
     private String errorMsg;
@@ -24,14 +24,12 @@ public class ErrorHandler implements Handler<RoutingContext> {
     @Override
     public void handle(RoutingContext context) {
         Throwable error = context.failure();
-        //http status code is always 200.
-        int statusCode = context.statusCode();
-        logger.info("Error : {}", error != null ? error.getMessage() : "Unknown");
         if (error != null) {
-            if (showDetailMsg) {
+            if (debug) {
                 errorMsg = error.getMessage();
             }
         }
-        context.response().end(ResponseBuilder.buildJson(statusCode, errorMsg, null));
+        logger.error("handle error", error);
+        context.response().end(GatewayResponse.asErrorJson(errorMsg));
     }
 }
