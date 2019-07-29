@@ -1,9 +1,8 @@
 package com.github.masterdxy.gateway.verticle;
 
-import org.apache.dubbo.common.utils.NetUtils;
-
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.github.masterdxy.gateway.handler.HandlerMapping;
+import com.github.masterdxy.gateway.utils.AddressUtils;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -35,12 +34,13 @@ public class GatewayVerticle extends AbstractVerticle {
 
     @Override
     public void start(Future<Void> startFuture) throws Exception {
-        if (StringUtils.isEmpty(bindHost)){
-            log.warn("bind host is null, trying fetch an ip.");
-            bindHost = NetUtils.getLocalHost();
+        //TODO use hazelcast address picker
+        if (StringUtils.isEmpty(bindHost)) {
+            bindHost = AddressUtils.getLocalIpAddress();
+            log.warn("bind host is null, pick :{}",bindHost);
         }
-        SocketAddress bindAddress = SocketAddress.inetSocketAddress(bindPort,bindHost);
-        log.info("Gateway is bind to {}",bindAddress.toString());
+        SocketAddress bindAddress = SocketAddress.inetSocketAddress(bindPort, bindHost);
+        log.info("Gateway is bind to {}", bindAddress.toString());
         //Build router and handlers
         Handler<HttpServerRequest> handler = handlerMapping.getGatewayHandler(vertx);
         vertx.createHttpServer()
