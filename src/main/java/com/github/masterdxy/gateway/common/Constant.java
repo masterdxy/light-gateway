@@ -3,38 +3,43 @@ package com.github.masterdxy.gateway.common;
 public final class Constant {
 
     //Vertx
+    public static final String ROUTE_BASE_PATH = "/api/*";
+    public static final int ROUTE_BASE_PATH_LENGTH = 4;
+    public static final String APPLICATION_JSON = "application/json";
     public static final String LOGGER_FACTORY = "io.vertx.core.logging.SLF4JLogDelegateFactory";
     public static final String VERTICLE_PREFIX = "gateway";
     public static final String WORKER_POOL_NAME = "gateway-work-pool";
-    public static final int DELAY_TRY_LOCK = 1000 * 60;
-    public static final int DELAY_LOAD_EPC = 1000 * 30;
+    public static final int DELAY_LOAD_EPC = 1000 * 60;
+    public static final int DELAY_TYR_LOCK = 1000 * 10;     //10s
 
+    //Lock timeout
+    public static final int LOCK_TIMEOUT_MS = 10;
+    //Lock lease time
+    public static final int LOCK_LEASE_TIME_MS = 1000 * 60;  //hold lock time
 
+    //Dubbo
     public static final String DUBBO_CONSUMER_APPLICATION_NAME = "gateway-consumer";
+    public static final int DUBBO_HEART_BEAT_INTERVAL = 1000;
+    public static final int DUBBO_RETRY = 0;
+    public static final String DUBBO_DEFAULT_VERSION = "1.0.0";
 
+    //Protocol
+    public static final String PROTOCOL_DUBBO = "dubbo";
+    public static final String PROTOCOL_HTTP = "http";
 
     //Context Key
     public static final String GATEWAY_REQUEST_KEY = "gr";
     public static final String ENDPOINT_CONFIG = "epc";
 
+    //Response Headers
+    public static final String RESPONSE_HEADER_KEY_TIME = "gateway-response-time";
+    //Response Status Code
+    public static final int RESPONSE_STATUS_OK = 200;
+    public static final int RESPONSE_STATUS_ERROR = 500;
 
 
-    public static final String PLUGIN_RESULT_KEY = "plugin_result";
-    public static final String PLUGIN_ERROR_MESSAGE_KEY = "plugin_error_msg";
-    public static final String PLUGIN_ERROR_THROW_OBJ_KEY = "plugin_error_throwable";
-
-
-
-
-    //Headers
-    public static final String HEADER_RESPONSE_TIME = "gateway-response-time";
-
-
-    //Datasource
-
-
-    //HAZELCAST Key
+    //Hazelcast Key
     public static final String HAZELCAST_EPC_MAP_KEY = "hazelcast_epc_map";
-
+    public static final String HAZELCAST_LOCK_KEY = "config_keeper_lock";
 
 }
