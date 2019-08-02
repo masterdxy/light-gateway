@@ -16,7 +16,7 @@ public class HazelcastConfiguration {
     }
 
     @Bean
-    public HazelcastInstance hazelcastInstance(Config config){
+    public HazelcastInstance hazelcastInstance(Config config) {
         return Hazelcast.getOrCreateHazelcastInstance(config);
     }
 }
