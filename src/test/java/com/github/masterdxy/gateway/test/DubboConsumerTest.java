@@ -1,4 +1,4 @@
-package com.github.masterdxy.gatetay.test;
+package com.github.masterdxy.gateway.test;
 
 import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ReferenceConfig;
