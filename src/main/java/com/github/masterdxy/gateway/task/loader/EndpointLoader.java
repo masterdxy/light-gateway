@@ -13,7 +13,6 @@ import org.jfaster.mango.operator.Mango;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -22,7 +21,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Component
-@Order(1)
 public class EndpointLoader extends RunOnStartFixDelayScheduledService implements TaskRegistry.Task {
 
     private static final Logger logger = LoggerFactory.getLogger(EndpointLoader.class);
@@ -39,7 +37,7 @@ public class EndpointLoader extends RunOnStartFixDelayScheduledService implement
     private EndpointDao endpointDao;
 
     @Override
-    protected void runOneIteration() throws Exception {
+    protected void runOneIteration() {
         fetchEndpointData();
     }
 
@@ -50,7 +48,7 @@ public class EndpointLoader extends RunOnStartFixDelayScheduledService implement
                 endpointDao = mango.create(EndpointDao.class);
             }
             Map<String, Endpoint> endpointConfigMap = Maps.newConcurrentMap();
-            List<Endpoint> allEpc = endpointDao.findAll();
+            List<Endpoint> allEpc = endpointDao.getAll();
             allEpc.forEach(epc -> endpointConfigMap.put(epc.getUri(), epc));
             hazelcastInstance.getMap(Constant.HAZELCAST_EPC_MAP_KEY).putAll(endpointConfigMap);
             endpointManager.updateEpcMap(endpointConfigMap);
