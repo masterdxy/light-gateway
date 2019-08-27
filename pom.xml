@@ -16,7 +16,6 @@
         <dubbo.version>2.7.1</dubbo.version>
         <nacos.version>0.9.0</nacos.version>
         <jmango.version>1.6.1</jmango.version>
-        <jmango-starter.version>2.0.1</jmango-starter.version>
         <hikaricp.version>2.7.9</hikaricp.version>
         <mysql-connector.version>5.1.38</mysql-connector.version>
         <slf4j.version>1.7.25</slf4j.version>
@@ -158,11 +157,6 @@
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>${hikaricp.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jfaster</groupId>
-            <artifactId>mango-spring-boot-starter</artifactId>
-            <version>${jmango-starter.version}</version>
         </dependency>
         <!-- database & orm end-->
 

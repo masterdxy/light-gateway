@@ -1,0 +1,11 @@
+gateway.dubbo.registry=nacos://192.168.4.11:8848
+gateway.dubbo.metadata=redis://192.168.3.67:6379
+gateway.http.port=8080
+gateway.cluster.enable=true
+#MySQL Config
+datasource.jdbc-url=jdbc:mysql://192.168.3.68:3306/sample?useSSL=false
+datasource.driver-class-name=com.mysql.jdbc.Driver
+datasource.username=root
+datasource.password=root
+datasource.max-pool-size=10
+datasource.connection-timeout=3000
