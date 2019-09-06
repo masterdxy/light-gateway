@@ -14,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
 @Component
 @Lazy(value = false)
 public class DubboPlugin implements Plugin {
@@ -23,7 +21,7 @@ public class DubboPlugin implements Plugin {
     private static final Logger logger = LoggerFactory.getLogger(DubboPlugin.class);
 
     @Autowired
-    private DubboServiceProvider dubboServiceProvider;
+    private DubboServiceCache dubboServiceCache;
 
 
     @Override
@@ -33,8 +31,7 @@ public class DubboPlugin implements Plugin {
 
     @Override
     public boolean match(RoutingContext context) {
-        Optional<Endpoint> optionalEndpoint = ContextUtils.getEndpoint(context);
-        return optionalEndpoint.filter(endpoint -> Constant.DUBBO_PROTOCOL_DUBBO.equalsIgnoreCase(endpoint.getUpstreamType())).isPresent();
+        return ContextUtils.isDubbo(context);
     }
 
     @Override
@@ -42,15 +39,15 @@ public class DubboPlugin implements Plugin {
         //invoke rpc in worker thread pool;
         //add result into context;
         //invoke chain next;
+        Endpoint endpoint = ContextUtils.getEndpoint(context);
         GatewayRequest request = context.get(Constant.GATEWAY_REQUEST_KEY);
-        DubboServiceIdentity serviceIdentity = DubboServiceIdentity.as(request.getNamespace(), request.getVersion());
-        DubboProxyService service = dubboServiceProvider.getDubboService(serviceIdentity);
+        DubboServiceIdentity serviceIdentity = DubboServiceIdentity.as(endpoint.getUpstreamUrl(), endpoint.getVersion());
+        DubboProxyService service = dubboServiceCache.getDubboService(serviceIdentity);
         if (service == null) {
             return PluginResult.fail("service not found");
         }
         Object object = service.invoke(request.getMethod(), request.getData());
         logger.info("DubboPlugin execute result : {}", object);
-        context.put(Constant.PLUGIN_RESULT_KEY, object);
         return PluginResult.success(object);
     }
 }

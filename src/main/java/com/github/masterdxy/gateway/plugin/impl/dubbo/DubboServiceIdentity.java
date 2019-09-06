@@ -9,11 +9,11 @@ public class DubboServiceIdentity {
 
     private String interfaceName;
     private String version;
-    private Map<String,Object> methodMapping;
+    private Map<String, Object> methodMapping;
 
-    public static DubboServiceIdentity as(String interfaceName,String version){
-        return new DubboServiceIdentity(Objects.requireNonNull(interfaceName,"interfaceName is null"),
-                Objects.requireNonNull(version,"version is null"),
+    public static DubboServiceIdentity as(String interfaceName, String version) {
+        return new DubboServiceIdentity(Objects.requireNonNull(interfaceName, "interfaceName is null"),
+                Objects.requireNonNull(version, "version is null"),
                 Maps.newHashMap());
     }
 

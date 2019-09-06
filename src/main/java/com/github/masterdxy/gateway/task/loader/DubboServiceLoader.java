@@ -55,7 +55,7 @@ public class DubboServiceLoader extends RunOnStartFixDelayScheduledService imple
 
 
     @Override
-    protected void runOneIteration() throws Exception {
+    protected void runOneIteration() {
         List<DubboServiceIdentity> serviceIdentityList = fetchDubboMetaData();
         loadDubboService(serviceIdentityList);
     }
@@ -131,7 +131,7 @@ public class DubboServiceLoader extends RunOnStartFixDelayScheduledService imple
                 applicationConfigCache.setRegistry(registryConfigCache);
             }
         }
-        ReferenceConfig<GenericService> reference = new ReferenceConfig<GenericService>();
+        ReferenceConfig<GenericService> reference = new ReferenceConfig<>();
         reference.setInterface(serviceIdentity.getInterfaceName());
         reference.setVersion(serviceIdentity.getVersion());
         Map<String, String> map = Maps.newHashMap();
