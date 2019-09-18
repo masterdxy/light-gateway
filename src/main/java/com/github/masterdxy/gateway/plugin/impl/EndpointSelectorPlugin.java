@@ -1,9 +1,10 @@
 package com.github.masterdxy.gateway.plugin.impl;
 
 import com.github.masterdxy.gateway.common.Constant;
-import com.github.masterdxy.gateway.common.EndpointConfig;
+import com.github.masterdxy.gateway.common.Endpoint;
 import com.github.masterdxy.gateway.plugin.Plugin;
 import com.github.masterdxy.gateway.plugin.PluginChain;
+import com.github.masterdxy.gateway.plugin.PluginResult;
 import com.github.masterdxy.gateway.plugin.endpoint.EndpointMatcher;
 import com.github.masterdxy.gateway.protocol.v1.GatewayRequest;
 import io.vertx.ext.web.RoutingContext;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 @Lazy(value = false)
@@ -37,20 +39,20 @@ public class EndpointSelectorPlugin implements Plugin {
     }
 
     @Override
-    public boolean execute(RoutingContext context, PluginChain chain) {
+    public PluginResult execute(RoutingContext context, PluginChain chain) {
         //request is never null here.
         GatewayRequest request = Objects.requireNonNull(context.get(Constant.GATEWAY_REQUEST_KEY));
         //resolve upstream type
-        EndpointConfig endpointConfig = endpointMatcher.match(request);
+        Optional<Endpoint> endpoint = endpointMatcher.match(request);
 
-        if (endpointConfig == null) {
-            logger.warn("EndpointSelector :{}, requestUri :{}", "Endpoint not found",context.request().absoluteURI());
-            context.put(Constant.PLUGIN_ERROR_MESSAGE_KEY, "Endpoint not found.");
-            return false;
+        if (!endpoint.isPresent()) {
+            logger.warn("EndpointSelector :{}, requestUri :{}", "Endpoint not found", context.request().absoluteURI());
+            return PluginResult.fail("Endpoint not found");
         }
-
         //set endpoint config into context
-        context.put(Constant.ENDPOINT_CONFIG,endpointConfig);
-        return false;
+        context.put(Constant.ENDPOINT_CONFIG, endpoint.get());
+
+
+        return chain.execute();
     }
 }
