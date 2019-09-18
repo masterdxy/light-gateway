@@ -24,9 +24,6 @@ public class Endpoint implements Serializable {
     //sign check for this epc
     private boolean isNeedSign;
 
-    //todo use gw_mock_data
-    private boolean isMock;
-
     //UK
     private String namespace;
     private String version;
@@ -73,14 +70,6 @@ public class Endpoint implements Serializable {
 
     public void setNeedSign(boolean needSign) {
         isNeedSign = needSign;
-    }
-
-    public boolean isMock() {
-        return isMock;
-    }
-
-    public void setMock(boolean mock) {
-        isMock = mock;
     }
 
     public Long getId() {
