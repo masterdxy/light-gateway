@@ -1,18 +1,20 @@
 package com.github.masterdxy.gateway.plugin.impl;
 
-import com.github.masterdxy.gateway.common.Constant;
-import com.github.masterdxy.gateway.common.EndpointConfig;
+import com.github.masterdxy.gateway.common.Endpoint;
 import com.github.masterdxy.gateway.plugin.Plugin;
 import com.github.masterdxy.gateway.plugin.PluginChain;
+import com.github.masterdxy.gateway.plugin.PluginResult;
+import com.github.masterdxy.gateway.utils.ContextUtils;
 import io.vertx.ext.web.RoutingContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
-import java.util.Objects;
 
 @Component
 @Lazy(value = false)
 public class AuthPlugin implements Plugin {
+    private static Logger logger = LoggerFactory.getLogger(AuthPlugin.class);
 
     @Override
     public int order() {
@@ -21,12 +23,13 @@ public class AuthPlugin implements Plugin {
 
     @Override
     public boolean match(RoutingContext context) {
-        EndpointConfig endpointConfig = Objects.requireNonNull(context.get(Constant.ENDPOINT_CONFIG));
-        return endpointConfig.isNeedAuth();
+        Endpoint endpoint = ContextUtils.getEndpoint(context);
+        return endpoint.isNeedAuth();
     }
 
     @Override
-    public boolean execute(RoutingContext context, PluginChain chain) {
-        return false;
+    public PluginResult execute(RoutingContext context, PluginChain chain) {
+        logger.info("AuthPlugin...");
+        return chain.execute();
     }
 }
