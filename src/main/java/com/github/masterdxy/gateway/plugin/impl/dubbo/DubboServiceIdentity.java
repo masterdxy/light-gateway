@@ -13,8 +13,7 @@ public class DubboServiceIdentity {
 
     public static DubboServiceIdentity as(String interfaceName, String version) {
         return new DubboServiceIdentity(Objects.requireNonNull(interfaceName, "interfaceName is null"),
-                Objects.requireNonNull(version, "version is null"),
-                Maps.newHashMap());
+            Objects.requireNonNull(version, "version is null"), Maps.newHashMap());
     }
 
     private DubboServiceIdentity(String interfaceName, String version, Map<String, Object> methodMapping) {
@@ -31,17 +30,17 @@ public class DubboServiceIdentity {
         return version;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DubboServiceIdentity that = (DubboServiceIdentity) o;
-        return com.google.common.base.Objects.equal(interfaceName, that.interfaceName) &&
-                com.google.common.base.Objects.equal(version, that.version);
+    @Override public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+            return false;
+        DubboServiceIdentity that = (DubboServiceIdentity)o;
+        return Objects.equals(interfaceName, that.interfaceName) && Objects.equals(version, that.version);
     }
 
-    @Override
-    public int hashCode() {
-        return com.google.common.base.Objects.hashCode(interfaceName, version);
+    @Override public int hashCode() {
+        return Objects.hash(interfaceName, version);
     }
 }

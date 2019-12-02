@@ -12,6 +12,9 @@ public final class Constant {
     public static final int DELAY_LOAD_EPC = 1000 * 60;
     public static final int DELAY_TYR_LOCK = 1000 * 10;     //10s
 
+    //Mango
+    public static final String DEFAULT_DATASOURCE_NAME = "def_ds";
+
     //Lock timeout
     public static final int LOCK_TIMEOUT_MS = 10;
     //Lock lease time
@@ -30,6 +33,7 @@ public final class Constant {
     //Context Key
     public static final String GATEWAY_REQUEST_KEY = "gr";
     public static final String ENDPOINT_CONFIG = "epc";
+    public static final String MOCK_DATA_KEY = "mock";
 
     //Response Headers
     public static final String RESPONSE_HEADER_KEY_TIME = "gateway-response-time";
@@ -37,9 +41,9 @@ public final class Constant {
     public static final int RESPONSE_STATUS_OK = 200;
     public static final int RESPONSE_STATUS_ERROR = 500;
 
-
     //Hazelcast Key
     public static final String HAZELCAST_EPC_MAP_KEY = "hazelcast_epc_map";
     public static final String HAZELCAST_LOCK_KEY = "config_keeper_lock";
+    public static final String HAZELCAST_MOCK_DATA_MAP_KEY = "hazelcast_mock_data_map";
 
 }

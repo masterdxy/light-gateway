@@ -35,23 +35,18 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
-@Component
-public class VertxInitialization {
+@Component public class VertxInitialization {
 
     private static Logger log = LoggerFactory.getLogger(VertxInitialization.class);
 
-    @NacosValue("${gateway.cluster.enable:true}")
-    private boolean enableCluster;
+    @NacosValue("${gateway.cluster.enable:true}") private boolean enableCluster;
 
-    //used for prometheus common tag key:value (application:gateway)
-    @NacosValue("${gateway.application.name:gateway}")
-    private String applicationName;
+    // used for prometheus common tag key:value (application:gateway)
+    @NacosValue("${gateway.application.name:gateway}") private String applicationName;
 
-    @Autowired
-    private SpringVerticleFactory springVerticleFactory;
+    @Autowired private SpringVerticleFactory springVerticleFactory;
 
-    @Autowired
-    private HazelcastInstance hazelcastInstance;
+    @Autowired private HazelcastInstance hazelcastInstance;
 
     private static Vertx vertx;
 
@@ -59,30 +54,27 @@ public class VertxInitialization {
 
     private static List<String> deploymentIds = Lists.newArrayList();
 
-
     public void initialization(CountDownLatch countDownLatch) {
         if (started || vertx != null) {
             throw new IllegalStateException("vertx already init.");
         }
-        //Make Dubbo generic client cache
-        MicrometerMetricsOptions metricsOptions = new MicrometerMetricsOptions()
-                .setJvmMetricsEnabled(false)
-                .setEnabled(true);
+        // Make Dubbo generic client cache
+        MicrometerMetricsOptions metricsOptions =
+            new MicrometerMetricsOptions().setJvmMetricsEnabled(false).setEnabled(true);
 
         MeterRegistry meterRegistry =
-                new PrometheusBackendRegistry(new VertxPrometheusOptions().setEnabled(true).setPublishQuantiles(true)).getMeterRegistry();
-
+            new PrometheusBackendRegistry(new VertxPrometheusOptions().setEnabled(true).setPublishQuantiles(true))
+                .getMeterRegistry();
 
         metricsOptions.setMicrometerRegistry(meterRegistry);
 
-        //register the common tag here
+        // register the common tag here
         initMeter(meterRegistry);
 
-        VertxOptions options = new VertxOptions()
-                .setMetricsOptions(metricsOptions);
+        VertxOptions options = new VertxOptions().setMetricsOptions(metricsOptions);
 
         if (enableCluster) {
-            //Make vertx cluster.
+            // Make vertx cluster.
             HazelcastClusterManager mgr = new HazelcastClusterManager(hazelcastInstance);
             options.setClusterManager(mgr);
             Vertx.clusteredVertx(options, res -> {
@@ -96,16 +88,16 @@ public class VertxInitialization {
                 }
             });
         } else {
-            //Create standalone vertx
+            // Create standalone vertx
             vertx = Vertx.vertx(options);
             deploy(countDownLatch);
         }
     }
 
     private void deploy(CountDownLatch countDownLatch) {
-        //Register vertx event bus and consumer
+        // Register vertx event bus and consumer
 
-        //Deploy gate's verticle
+        // Deploy gate's verticle
         Objects.requireNonNull(vertx);
         Objects.requireNonNull(springVerticleFactory);
         // The verticle factory is registered manually because it is created by the Spring container
@@ -117,27 +109,27 @@ public class VertxInitialization {
         deploymentOptions.setWorkerPoolSize(CpuCoreSensor.availableProcessors() * 2);
         deploymentOptions.setWorkerPoolName(Constant.WORKER_POOL_NAME);
 
-        vertx.deployVerticle(springVerticleFactory.prefix() + ":" + GatewayVerticle.class.getName(),
-                deploymentOptions, stringAsyncResult -> {
-                    if (stringAsyncResult.succeeded()) {
-                        log.info("Deploy GatewayVerticle Success, deploymentId:{}", stringAsyncResult.result());
-                        deploymentIds.add(stringAsyncResult.result());
-                        countDownLatch.countDown();
-                    } else
-                        log.error("Deploy GatewayVerticle Failed, deploymentId:{}, cause:{}",
-                                stringAsyncResult.result(), stringAsyncResult.cause().getMessage());
-                });
+        vertx.deployVerticle(springVerticleFactory.prefix() + ":" + GatewayVerticle.class.getName(), deploymentOptions,
+            stringAsyncResult -> {
+                if (stringAsyncResult.succeeded()) {
+                    log.info("Deploy GatewayVerticle Success, deploymentId:{}", stringAsyncResult.result());
+                    deploymentIds.add(stringAsyncResult.result());
+                    countDownLatch.countDown();
+                } else {
+                    log.error("Deploy GatewayVerticle Failed, deploymentId:{}, cause:{}", stringAsyncResult.result(),
+                        stringAsyncResult.cause().getMessage());
+                }
+            });
         vertx.deployVerticle(SpringContext.instance(ManagerVerticle.class), stringAsyncResult -> {
             if (stringAsyncResult.succeeded()) {
                 log.info("Deploy ManagerVerticle Success, deploymentId:{}", stringAsyncResult.result());
                 deploymentIds.add(stringAsyncResult.result());
                 countDownLatch.countDown();
             } else {
-                log.error("Deploy ManagerVerticle Failed, deploymentId:{}, cause:{}",
-                        stringAsyncResult.result(), stringAsyncResult.cause().getMessage());
+                log.error("Deploy ManagerVerticle Failed, deploymentId:{}, cause:{}", stringAsyncResult.result(),
+                    stringAsyncResult.cause().getMessage());
             }
         });
-
 
     }
 
@@ -151,11 +143,11 @@ public class VertxInitialization {
         new LogbackMetrics().bindTo(registry);
         new FileDescriptorMetrics().bindTo(registry);
         new UptimeMetrics().bindTo(registry);
-//        HikariDataSource hikariDataSource = (HikariDataSource) dataSource;
-//        Gauge.builder("active_connections", () -> hikariDataSource.getHikariPoolMXBean().getActiveConnections())
-//                .description("The number of active connections").register(registry);
-//        Gauge.builder("idle_connections", () -> hikariDataSource.getHikariPoolMXBean().getIdleConnections())
-//                .description("The number of idle connections").register(registry);
+        // HikariDataSource hikariDataSource = (HikariDataSource) dataSource;
+        // Gauge.builder("active_connections", () -> hikariDataSource.getHikariPoolMXBean().getActiveConnections())
+        // .description("The number of active connections").register(registry);
+        // Gauge.builder("idle_connections", () -> hikariDataSource.getHikariPoolMXBean().getIdleConnections())
+        // .description("The number of idle connections").register(registry);
     }
 
     public static Vertx getVertx() {

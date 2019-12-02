@@ -17,29 +17,22 @@ import org.springframework.stereotype.Component;
 import java.util.Objects;
 import java.util.Optional;
 
-@Component
-@Lazy(value = false)
-public class EndpointSelectorPlugin implements Plugin {
+@Component @Lazy(value = false) public class EndpointSelectorPlugin implements Plugin {
 
     private static Logger logger = LoggerFactory.getLogger(EndpointSelectorPlugin.class);
 
-    @Autowired
-    private EndpointMatcher endpointMatcher;
+    @Autowired private EndpointMatcher endpointMatcher;
 
-    @Override
-    public int order() {
+    @Override public int order() {
         return -100;
     }
 
-
-    @Override
-    public boolean match(RoutingContext context) {
+    @Override public boolean match(RoutingContext context) {
         //All request is match for EndpointSelector
         return true;
     }
 
-    @Override
-    public PluginResult execute(RoutingContext context, PluginChain chain) {
+    @Override public PluginResult execute(RoutingContext context, PluginChain chain) {
         //request is never null here.
         GatewayRequest request = Objects.requireNonNull(context.get(Constant.GATEWAY_REQUEST_KEY));
         //resolve upstream type
@@ -51,7 +44,6 @@ public class EndpointSelectorPlugin implements Plugin {
         }
         //set endpoint config into context
         context.put(Constant.ENDPOINT_CONFIG, endpoint.get());
-
 
         return chain.execute();
     }

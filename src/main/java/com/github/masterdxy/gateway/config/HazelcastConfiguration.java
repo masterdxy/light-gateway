@@ -6,17 +6,13 @@ import com.hazelcast.core.HazelcastInstance;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
-public class HazelcastConfiguration {
+@Configuration public class HazelcastConfiguration {
 
-    @Bean
-    public Config hazelCastConfig() {
-        return new Config()
-                .setInstanceName("gateway-hazelcast-instance");
+    @Bean public Config hazelCastConfig() {
+        return new Config().setInstanceName("gateway-hazelcast-instance");
     }
 
-    @Bean
-    public HazelcastInstance hazelcastInstance(Config config) {
+    @Bean public HazelcastInstance hazelcastInstance(Config config) {
         return Hazelcast.getOrCreateHazelcastInstance(config);
     }
 }

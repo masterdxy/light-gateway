@@ -9,24 +9,16 @@ import org.springframework.context.annotation.Configuration;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-@Configuration
-public class DataSourceConfig extends HikariConfig {
+@Configuration public class DataSourceConfig extends HikariConfig {
 
-    @NacosValue("${datasource.jdbc-url}")
-    private String jdbcUrl;
-    @NacosValue("${datasource.username}")
-    private String username;
-    @NacosValue("${datasource.password}")
-    private String password;
-    @NacosValue("${datasource.driver-class-name}")
-    private String driverClassName;
-    @NacosValue("${datasource.max-pool-size}")
-    private int maxPoolSize;
-    @NacosValue("${datasource.connection-timeout}")
-    private long connectionTimeout;
+    @NacosValue("${datasource.jdbc-url}") private String jdbcUrl;
+    @NacosValue("${datasource.username}") private String username;
+    @NacosValue("${datasource.password}") private String password;
+    @NacosValue("${datasource.driver-class-name}") private String driverClassName;
+    @NacosValue("${datasource.max-pool-size}") private int maxPoolSize;
+    @NacosValue("${datasource.connection-timeout}") private long connectionTimeout;
 
-    @Bean
-    public DataSource dataSource() throws SQLException {
+    @Bean public DataSource dataSource() throws SQLException {
         return new HikariDataSource(fillParams());
     }
 

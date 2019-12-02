@@ -16,31 +16,26 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
-@Component
-@Lazy(value = false)
-public class RateLimitPlugin implements Plugin {
+@Component @Lazy(value = false) public class RateLimitPlugin implements Plugin {
 
     private static Logger logger = LoggerFactory.getLogger(RateLimitPlugin.class);
     private volatile Bucket bucket;
 
-    @Override
-    public int order() {
+    @Override public int order() {
         return -80;
     }
 
-    @Override
-    public boolean match(RoutingContext context) {
+    @Override public boolean match(RoutingContext context) {
         //todo use RateLimit config find by epcId here.
         return false;
     }
 
     //limit the incoming api call not the outgoing proxy forward call.
-    @Override
-    public PluginResult execute(RoutingContext context, PluginChain chain) {
+    @Override public PluginResult execute(RoutingContext context, PluginChain chain) {
         logger.info("RateLimit...");
         ConsumptionProbe consumptionProbe = getOrCreateBucket().tryConsumeAndReturnRemaining(1);
         logger.info("Consumed : {}, Remain token :{}", consumptionProbe.isConsumed(),
-                consumptionProbe.getRemainingTokens());
+            consumptionProbe.getRemainingTokens());
         if (consumptionProbe.isConsumed()) {
             return chain.execute();
         } else {

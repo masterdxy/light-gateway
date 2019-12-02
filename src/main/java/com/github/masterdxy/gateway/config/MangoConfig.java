@@ -10,21 +10,19 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
 
-@Configuration
-public class MangoConfig {
+import static com.github.masterdxy.gateway.common.Constant.DEFAULT_DATASOURCE_NAME;
 
-    @Autowired
-    private DataSource dataSource;
+@Configuration public class MangoConfig {
 
-    @Bean
-    public Mango createMango() {
+    @Autowired private DataSource dataSource;
+
+    @Bean public Mango createMango() {
         Mango instance = Mango.newInstance();
         instance.setCacheHandler(new LocalCacheHandler());
-        DataSourceFactory dsf = new SimpleDataSourceFactory("def_ds", dataSource);
+        DataSourceFactory dsf = new SimpleDataSourceFactory(DEFAULT_DATASOURCE_NAME, dataSource);
         instance.setDataSourceFactory(dsf);
         instance.setLazyInit(false);
         return instance;
     }
-
 
 }

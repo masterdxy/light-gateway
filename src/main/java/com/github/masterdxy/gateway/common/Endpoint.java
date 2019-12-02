@@ -9,9 +9,7 @@ import java.io.Serializable;
 //                        /api/echo --> http  --> http://127.0.0.1:8001 -> no auth --> LB_DEF -->  Rate --> Sign
 public class Endpoint implements Serializable {
 
-
-    @ID
-    private Long id;
+    @ID private Long id;
     //match uri : /crud, matcher will use AntPathMatcher
     private String uri;
     //ONLY support http/dubbo
@@ -30,7 +28,6 @@ public class Endpoint implements Serializable {
 
     //0 OK 1 stop
     private int status;
-
 
     public String getUri() {
         return uri;

@@ -10,24 +10,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-@Component
-@Lazy(value = false)
-public class DefaultPlugin implements Plugin {
+@Component @Lazy(value = false) public class DefaultPlugin implements Plugin {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultPlugin.class);
 
-    @Override
-    public int order() {
+    @Override public int order() {
         return Integer.MAX_VALUE;
     }
 
-    @Override
-    public boolean match(RoutingContext context) {
+    @Override public boolean match(RoutingContext context) {
         return true;
     }
 
-    @Override
-    public PluginResult execute(RoutingContext context, PluginChain chain) {
+    @Override public PluginResult execute(RoutingContext context, PluginChain chain) {
         logger.warn("plugin chain execute finish but no result returned.");
         return PluginResult.success(StringUtils.EMPTY);
     }

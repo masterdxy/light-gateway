@@ -28,21 +28,18 @@ public class MetadataTest {
     StatefulRedisConnection<String, String> connection;
     RedisStringCommands<String, String> sync;
 
-    @BeforeEach
-    void setUp() {
+    @BeforeEach void setUp() {
         redisClient = RedisClient.create("redis://192.168.3.67:6379");
         connection = redisClient.connect();
         sync = connection.sync();
     }
 
-    @AfterEach
-    void tearDown() {
+    @AfterEach void tearDown() {
         connection.close();
         redisClient.shutdown();
     }
 
-    @Test
-    void testServiceDefinitionParse() throws InterruptedException {
+    @Test void testServiceDefinitionParse() throws InterruptedException {
         //todo use set ?
         String key = "com.jiaoma.service.sample.api.CRUDService:1.0.0:provider:sample-service.metaData";
         String value = sync.get(key);
@@ -71,8 +68,7 @@ public class MetadataTest {
 
         for (; ; ) {
             try {
-                Object result = service.$invoke("retrieve", null,
-                        new Object[]{"2"});
+                Object result = service.$invoke("retrieve", null, new Object[] {"2"});
                 System.out.println(JSON.toJSONString(result));
 
             } catch (Exception e) {

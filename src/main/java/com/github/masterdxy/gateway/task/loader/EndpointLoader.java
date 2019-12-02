@@ -20,31 +20,25 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-@Component
-public class EndpointLoader extends RunOnStartFixDelayScheduledService implements TaskRegistry.Task {
+@Component public class EndpointLoader extends RunOnStartFixDelayScheduledService implements TaskRegistry.Task {
 
     private static final Logger logger = LoggerFactory.getLogger(EndpointLoader.class);
 
-    @Autowired
-    private Mango mango;
-    @Autowired
-    private MasterLocker masterLocker;
-    @Autowired
-    private EndpointManager endpointManager;
-    @Autowired
-    private HazelcastInstance hazelcastInstance;
+    @Autowired private Mango mango;
+    @Autowired private MasterLocker masterLocker;
+    @Autowired private EndpointManager endpointManager;
+    @Autowired private HazelcastInstance hazelcastInstance;
 
     private EndpointDao endpointDao;
 
-    @Override
-    protected void runOneIteration() {
+    @Override protected void runOneIteration() {
         fetchEndpointData();
     }
 
     private void fetchEndpointData() {
         if (masterLocker.isHasMasterLock()) {
             logger.info("fetch endpoint data from MySQL store with lock ...");
-            if (endpointDao == null){
+            if (endpointDao == null) {
                 endpointDao = mango.create(EndpointDao.class);
             }
             Map<String, Endpoint> endpointConfigMap = Maps.newConcurrentMap();
@@ -63,23 +57,19 @@ public class EndpointLoader extends RunOnStartFixDelayScheduledService implement
 
     }
 
-    @Override
-    protected Scheduler scheduler() {
+    @Override protected Scheduler scheduler() {
         return Scheduler.newFixedDelaySchedule(Constant.DELAY_LOAD_EPC, Constant.DELAY_LOAD_EPC, TimeUnit.MILLISECONDS);
     }
 
-    @Override
-    public String name() {
+    @Override public String name() {
         return "endpoint-loader";
     }
 
-    @Override
-    public void stop() {
+    @Override public void stop() {
         super.stopAsync();
     }
 
-    @Override
-    public int order() {
+    @Override public int order() {
         return 2;
     }
 }

@@ -7,8 +7,7 @@ import java.io.Serializable;
 //config rate limiter params , RateLimitPlugin use.
 public class RateLimit implements Serializable {
 
-    @ID
-    private Long endpointId;
+    @ID private Long endpointId;
     //capacity of init token size
     private int overdraft;
 

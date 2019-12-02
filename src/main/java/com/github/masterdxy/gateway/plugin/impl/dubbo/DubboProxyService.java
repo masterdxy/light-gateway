@@ -13,12 +13,12 @@ public class DubboProxyService {
     //todo monitor here
     //todo try catch here
     public Optional<Object> invoke(String method, Object param) {
-        return Optional.ofNullable(internal.$invoke(method, null, new Object[]{param}));
+        return Optional.ofNullable(internal.$invoke(method, null, new Object[] {param}));
     }
 
     public static DubboProxyService wrap(DubboServiceIdentity serviceIdentity, GenericService genericService) {
         return new DubboProxyService(Objects.requireNonNull(serviceIdentity, "DubboServiceIdentity is null"),
-                Objects.requireNonNull(genericService, "genericService is null"));
+            Objects.requireNonNull(genericService, "genericService is null"));
     }
 
     private DubboProxyService(DubboServiceIdentity serviceIdentity, GenericService internal) {

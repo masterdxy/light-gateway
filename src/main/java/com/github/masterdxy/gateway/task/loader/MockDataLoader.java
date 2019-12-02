@@ -24,37 +24,28 @@ public class MockDataLoader extends RunOnStartFixDelayScheduledService implement
 
     private static final Logger logger = LoggerFactory.getLogger(MockDataLoader.class);
 
-    @Autowired
-    private HazelcastInstance hazelcastInstance;
-    @Autowired
-    private Mango mango;
-    @Autowired
-    private MasterLocker masterLocker;
-    @Autowired
-    private MockDataManager mockDataManager;
+    @Autowired private HazelcastInstance hazelcastInstance;
+    @Autowired private Mango mango;
+    @Autowired private MasterLocker masterLocker;
+    @Autowired private MockDataManager mockDataManager;
 
     private MockDataDao mockDataDao;
 
-    @Override
-    public String name() {
+    @Override public String name() {
         return "mock-data";
     }
 
-    @Override
-    public void stop() {
+    @Override public void stop() {
         super.stopAsync();
     }
 
-    @Override
-    public int order() {
+    @Override public int order() {
         return 4;
     }
 
-    @Override
-    protected void runOneIteration() throws Exception {
+    @Override protected void runOneIteration() throws Exception {
         fetchMockData();
     }
-
 
     //retrieve data from database and cache into cache.
     private void fetchMockData() {
@@ -83,8 +74,7 @@ public class MockDataLoader extends RunOnStartFixDelayScheduledService implement
         }
     }
 
-    @Override
-    protected Scheduler scheduler() {
+    @Override protected Scheduler scheduler() {
         return Scheduler.newFixedDelaySchedule(Constant.DELAY_LOAD_EPC, Constant.DELAY_LOAD_EPC, TimeUnit.MILLISECONDS);
     }
 }

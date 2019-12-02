@@ -9,7 +9,6 @@ public class PluginResult {
 
     private Object data;
 
-
     public Throwable getThrowable() {
         return throwable;
     }

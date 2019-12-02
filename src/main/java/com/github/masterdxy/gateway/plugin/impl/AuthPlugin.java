@@ -11,24 +11,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-@Component
-@Lazy(value = false)
-public class AuthPlugin implements Plugin {
+@Component @Lazy(value = false) public class AuthPlugin implements Plugin {
     private static Logger logger = LoggerFactory.getLogger(AuthPlugin.class);
 
-    @Override
-    public int order() {
+    @Override public int order() {
         return -90;
     }
 
-    @Override
-    public boolean match(RoutingContext context) {
+    @Override public boolean match(RoutingContext context) {
         Endpoint endpoint = ContextUtils.getEndpoint(context);
         return endpoint.isNeedAuth();
     }
 
-    @Override
-    public PluginResult execute(RoutingContext context, PluginChain chain) {
+    @Override public PluginResult execute(RoutingContext context, PluginChain chain) {
         logger.info("AuthPlugin...");
         return chain.execute();
     }

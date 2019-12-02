@@ -6,10 +6,10 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+//Note: add local ip address into logback context.
 public class LogbackUtils extends ClassicConverter {
 
-    @Override
-    public String convert(ILoggingEvent event) {
+    @Override public String convert(ILoggingEvent event) {
         try {
             return InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {

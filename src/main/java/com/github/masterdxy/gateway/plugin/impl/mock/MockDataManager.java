@@ -10,8 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
-@Component
-public class MockDataManager {
+@Component public class MockDataManager {
 
     private static final Logger logger = LoggerFactory.getLogger(MockDataManager.class);
     private AtomicReference<Map<Long, MockData>> mapAtomicReference = new AtomicReference<>(Maps.newConcurrentMap());

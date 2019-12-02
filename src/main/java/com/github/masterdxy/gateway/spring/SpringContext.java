@@ -19,13 +19,12 @@ public class SpringContext {
     }
 
     public static void stop() {
-        Objects.requireNonNull((AbstractApplicationContext) context).close();
+        Objects.requireNonNull((AbstractApplicationContext)context).close();
     }
 
     public static <T> T instance(Class<T> tClass) {
         return Objects.requireNonNull(context).getBean(tClass);
     }
-
 
     public static <T> List<T> instances(Class<T> iCls) {
         Map<String, T> maps = Objects.requireNonNull(context).getBeansOfType(iCls);

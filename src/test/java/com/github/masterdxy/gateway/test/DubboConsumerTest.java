@@ -16,15 +16,16 @@ public class DubboConsumerTest {
         ApplicationConfig application = new ApplicationConfig();
         application.setName("gateway-test");
 
-// Registry Info
+        // Registry Info
         RegistryConfig registry = new RegistryConfig();
         registry.setAddress("127.0.0.1:8848");
         registry.setProtocol("nacos");
 
-// NOTES: ReferenceConfig holds the connections to registry and providers, please cache it for performance.
+        // NOTES: ReferenceConfig holds the connections to registry and providers, please cache it for performance.
 
-// Refer remote service
-        ReferenceConfig<CRUDService> reference = new ReferenceConfig<CRUDService>(); // In case of memory leak, please cache.
+        // Refer remote service
+        ReferenceConfig<CRUDService> reference =
+            new ReferenceConfig<CRUDService>(); // In case of memory leak, please cache.
         reference.setApplication(application);
         reference.setRegistry(registry);
         reference.setProtocol("dubbo");
@@ -32,7 +33,7 @@ public class DubboConsumerTest {
         //version为必填否则no provider
         reference.setVersion("1.0.0");
 
-// Use xxxService just like a local bean
+        // Use xxxService just like a local bean
         CRUDService crudService = reference.get(); // NOTES: Please cache this proxy instance.
         logger.info("Dubbo client : {}", crudService.toString());
     }

@@ -10,8 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
-@Component
-public class EndpointManager {
+@Component public class EndpointManager {
 
     // ✅resolve endpoint config from datasource.
     // ✅watch endpoint changes.
@@ -31,13 +30,14 @@ public class EndpointManager {
 
     public void updateEpcMap(Map<String, Endpoint> map) {
         Objects.requireNonNull(map);
-        logger.info("updating endpoint map, before size :{}, now size :{}", mapAtomicReference.get().size(),
-                map.size());
+        logger
+            .info("updating endpoint map, before size :{}, now size :{}", mapAtomicReference.get().size(), map.size());
         mapAtomicReference.compareAndSet(mapAtomicReference.get(), map);
 
     }
 
-    public Map<String,Endpoint> getEndpointMap(){return mapAtomicReference.get();}
-
+    public Map<String, Endpoint> getEndpointMap() {
+        return mapAtomicReference.get();
+    }
 
 }

@@ -15,19 +15,14 @@ import java.util.Objects;
 
 import static com.github.masterdxy.gateway.common.Constant.MOCK_DATA_KEY;
 
-@Component
-@Lazy(value = false)
-public class MockPlugin implements Plugin {
-    @Autowired
-    private MockDataManager mockDataManager;
+@Component @Lazy(value = false) public class MockPlugin implements Plugin {
+    @Autowired private MockDataManager mockDataManager;
 
-    @Override
-    public int order() {
+    @Override public int order() {
         return -99;
     }
 
-    @Override
-    public boolean match(RoutingContext context) {
+    @Override public boolean match(RoutingContext context) {
         Endpoint endpoint = ContextUtils.getEndpoint(context);
         MockData mockData = mockDataManager.getMockDataByEpcId(endpoint.getId());
         if (mockData != null) {
@@ -37,8 +32,7 @@ public class MockPlugin implements Plugin {
         return false;
     }
 
-    @Override
-    public PluginResult execute(RoutingContext context, PluginChain chain) {
+    @Override public PluginResult execute(RoutingContext context, PluginChain chain) {
         //Get mock data from storage.
         MockData mockData = context.get(MOCK_DATA_KEY);
         Objects.requireNonNull(mockData);

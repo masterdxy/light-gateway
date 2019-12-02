@@ -9,20 +9,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-@Component
-@Lazy(value = false)
-public class ErrorHandler implements Handler<RoutingContext> {
+@Component @Lazy(value = false) public class ErrorHandler implements Handler<RoutingContext> {
 
-    @NacosValue("${gateway.debug:true}")
-    private boolean debug;
+    @NacosValue("${gateway.debug:true}") private boolean debug;
 
-    @NacosValue("${gateway.error.msg:Server Error}")
-    private String errorMsg;
+    @NacosValue("${gateway.error.msg:Server Error}") private String errorMsg;
 
     private static Logger logger = LoggerFactory.getLogger(ErrorHandler.class);
 
-    @Override
-    public void handle(RoutingContext context) {
+    @Override public void handle(RoutingContext context) {
         Throwable error = context.failure();
         if (error != null) {
             if (debug) {

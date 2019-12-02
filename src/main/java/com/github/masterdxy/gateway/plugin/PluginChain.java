@@ -33,26 +33,31 @@ public class PluginChain {
     public PluginResult execute() {
         if (index < plugins.size()) {
             Plugin plugin = plugins.get(index++);
-            if (plugin.match(context))
+            if (plugin.match(context)) {
                 return plugin.execute(context, this);
-            execute();
+            }
+            //next plugin
+            return execute();
         }
-        //todo handle no result returned .
-        throw new IllegalStateException("plugin chain");
+        //never reached by DefaultPlugin
+        throw new IllegalStateException("plugin chain has no return");
     }
+
+    private static List<Plugin> cache;
 
     public static PluginChain build(RoutingContext context) {
         //todo cache plugins.
-        List<Plugin> plugins = SpringContext.instances(Plugin.class);
-        plugins.sort(Comparator.comparingInt(Plugin::order));
-        logger.info("Plugins : {}", plugins.stream().map(p -> ClassUtils.getShortClassName(p, "null"
-                                        )).collect(Collectors.joining(",")));
+        if (cache == null) {
+            cache = SpringContext.instances(Plugin.class);
+            cache.sort(Comparator.comparingInt(Plugin::order));
+            logger.info("Plugins : {}",
+                cache.stream().map(p -> ClassUtils.getShortClassName(p, "null")).collect(Collectors.joining(",")));
+        }
         PluginChain chain = new PluginChain();
         chain.setContext(context);
-        chain.setPlugins(plugins);
+        chain.setPlugins(cache);
         return chain;
     }
-
 
     public int getIndex() {
         return index;

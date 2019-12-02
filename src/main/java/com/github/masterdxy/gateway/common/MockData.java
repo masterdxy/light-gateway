@@ -10,12 +10,9 @@ public class MockData implements Serializable {
     private Long endpointId;
     private String mockData;
 
-
     //todo random data logic
 
-    @ID
-    private Long id;
-
+    @ID private Long id;
 
     public Long getEndpointId() {
         return endpointId;

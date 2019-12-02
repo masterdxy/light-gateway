@@ -26,7 +26,7 @@ public class TaskRegistry {
         });
     }
 
-    public static void stopAll(){
+    public static void stopAll() {
         tasks.forEach(Task::stop);
     }
 
@@ -36,8 +36,11 @@ public class TaskRegistry {
 
     public interface Task {
         void startAfterRunOnce() throws Exception;
+
         String name();
+
         void stop();
+
         int order();
     }
 }

@@ -34,28 +34,21 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-@Component
-public class DubboServiceLoader extends RunOnStartFixDelayScheduledService implements TaskRegistry.Task {
+@Component public class DubboServiceLoader extends RunOnStartFixDelayScheduledService implements TaskRegistry.Task {
 
     private static final Logger logger = LoggerFactory.getLogger(DubboServiceLoader.class);
 
-    @NacosValue("${gateway.dubbo.registry}")
-    private String registryAddress;
+    @NacosValue("${gateway.dubbo.registry}") private String registryAddress;
 
-    @Autowired
-    private DubboServiceCache dubboServiceCache;
-    @Autowired
-    private HazelcastInstance hazelcastInstance;
-    @Autowired
-    private RedisClient redisClient;
+    @Autowired private DubboServiceCache dubboServiceCache;
+    @Autowired private HazelcastInstance hazelcastInstance;
+    @Autowired private RedisClient redisClient;
 
     //TODO metadata clean up supported by service provider
     private ApplicationConfig applicationConfigCache;
     private RegistryConfig registryConfigCache;
 
-
-    @Override
-    protected void runOneIteration() {
+    @Override protected void runOneIteration() {
         List<DubboServiceIdentity> serviceIdentityList = fetchDubboMetaData();
         loadDubboService(serviceIdentityList);
     }
@@ -70,7 +63,7 @@ public class DubboServiceLoader extends RunOnStartFixDelayScheduledService imple
             if (metaDataKeys == null || metaDataKeys.size() == 0) {
                 return serviceIdentityList;
             }
-            List<KeyValue<String, String>> metaData = syncCommand.mget(metaDataKeys.toArray(new String[]{}));
+            List<KeyValue<String, String>> metaData = syncCommand.mget(metaDataKeys.toArray(new String[] {}));
             if (metaData == null || metaData.size() == 0) {
                 return serviceIdentityList;
             }
@@ -78,7 +71,8 @@ public class DubboServiceLoader extends RunOnStartFixDelayScheduledService imple
                 String defStr = stringStringKeyValue.getValue();
                 try {
                     FullServiceDefinition serviceDefinition = JSON.parseObject(defStr, FullServiceDefinition.class);
-                    String version = serviceDefinition.getParameters().getOrDefault(Constants.VERSION_KEY, Constant.DUBBO_DEFAULT_VERSION);
+                    String version = serviceDefinition.getParameters()
+                                         .getOrDefault(Constants.VERSION_KEY, Constant.DUBBO_DEFAULT_VERSION);
                     serviceIdentityList.add(DubboServiceIdentity.as(serviceDefinition.getCanonicalName(), version));
                 } catch (Exception e) {
                     logger.error("metadata load error", e);
@@ -90,13 +84,12 @@ public class DubboServiceLoader extends RunOnStartFixDelayScheduledService imple
         return serviceIdentityList;
     }
 
-
     private void loadDubboService(List<DubboServiceIdentity> serviceIdentities) {
         Objects.requireNonNull(serviceIdentities).forEach(serviceIdentity -> {
             DubboProxyService service = locatingDubboService(serviceIdentity);
             if (service != null) {
-                logger.info("metadata load success, service :{}, version :{}",
-                        serviceIdentity.getInterfaceName(), serviceIdentity.getVersion());
+                logger.info("metadata load success, service :{}, version :{}", serviceIdentity.getInterfaceName(),
+                    serviceIdentity.getVersion());
             }
         });
     }
@@ -113,12 +106,10 @@ public class DubboServiceLoader extends RunOnStartFixDelayScheduledService imple
 
     //to prevent reference-config destroy warn log.
     private ConcurrentMap<DubboServiceIdentity, ReferenceConfig<GenericService>> referenceConfigConcurrentMap =
-            Maps.newConcurrentMap();
-
+        Maps.newConcurrentMap();
 
     private Function<DubboServiceIdentity, GenericService> serviceLoader = (serviceIdentity) -> {
-        ReferenceConfig<GenericService> referenceConfig =
-                referenceConfigConcurrentMap.get(serviceIdentity);
+        ReferenceConfig<GenericService> referenceConfig = referenceConfigConcurrentMap.get(serviceIdentity);
         if (referenceConfig != null) {
             return referenceConfig.get();
         }
@@ -136,7 +127,8 @@ public class DubboServiceLoader extends RunOnStartFixDelayScheduledService imple
         reference.setVersion(serviceIdentity.getVersion());
         Map<String, String> map = Maps.newHashMap();
 
-        map.put(Constants.HEARTBEAT_KEY, String.valueOf(Constant.DUBBO_HEART_BEAT_INTERVAL));     //every 1s try to reconnect target provider
+        map.put(Constants.HEARTBEAT_KEY,
+            String.valueOf(Constant.DUBBO_HEART_BEAT_INTERVAL));     //every 1s try to reconnect target provider
         reference.setParameters(map);
         reference.setGeneric(true);
         reference.setRetries(Constant.DUBBO_RETRY);
@@ -148,24 +140,19 @@ public class DubboServiceLoader extends RunOnStartFixDelayScheduledService imple
         return reference.get();
     };
 
-
-    @Override
-    protected Scheduler scheduler() {
+    @Override protected Scheduler scheduler() {
         return Scheduler.newFixedDelaySchedule(Constant.DELAY_LOAD_EPC, Constant.DELAY_LOAD_EPC, TimeUnit.MILLISECONDS);
     }
 
-    @Override
-    public String name() {
+    @Override public String name() {
         return "dubbo-service-loader";
     }
 
-    @Override
-    public void stop() {
+    @Override public void stop() {
         super.stopAsync();
     }
 
-    @Override
-    public int order() {
+    @Override public int order() {
         return 3;
     }
 }

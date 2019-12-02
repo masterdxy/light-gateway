@@ -14,34 +14,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-@Component
-@Lazy(value = false)
-public class DubboPlugin implements Plugin {
+@Component @Lazy(value = false) public class DubboPlugin implements Plugin {
 
     private static final Logger logger = LoggerFactory.getLogger(DubboPlugin.class);
 
-    @Autowired
-    private DubboServiceCache dubboServiceCache;
+    @Autowired private DubboServiceCache dubboServiceCache;
 
-
-    @Override
-    public int order() {
+    @Override public int order() {
         return -60;
     }
 
-    @Override
-    public boolean match(RoutingContext context) {
+    @Override public boolean match(RoutingContext context) {
         return ContextUtils.isDubbo(context);
     }
 
-    @Override
-    public PluginResult execute(RoutingContext context, PluginChain chain) {
+    @Override public PluginResult execute(RoutingContext context, PluginChain chain) {
         //invoke rpc in worker thread pool;
         //add result into context;
         //invoke chain next;
         Endpoint endpoint = ContextUtils.getEndpoint(context);
         GatewayRequest request = context.get(Constant.GATEWAY_REQUEST_KEY);
-        DubboServiceIdentity serviceIdentity = DubboServiceIdentity.as(endpoint.getUpstreamUrl(), endpoint.getVersion());
+        DubboServiceIdentity serviceIdentity =
+            DubboServiceIdentity.as(endpoint.getUpstreamUrl(), endpoint.getVersion());
         DubboProxyService service = dubboServiceCache.getDubboService(serviceIdentity);
         if (service == null) {
             return PluginResult.fail("service not found");

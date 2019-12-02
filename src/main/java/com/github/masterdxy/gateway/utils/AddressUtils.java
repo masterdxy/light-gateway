@@ -12,7 +12,6 @@ public class AddressUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(AddressUtils.class);
 
-
     public static String getLocalIpAddress() {
         try {
             String localip = null;
@@ -28,15 +27,12 @@ public class AddressUtils {
                 Enumeration<InetAddress> address = ni.getInetAddresses();
                 while (address.hasMoreElements()) {
                     ip = address.nextElement();
-                    if (!ip.isSiteLocalAddress()
-                            && !ip.isLoopbackAddress()
-                            && ip.getHostAddress().indexOf(":") == -1) {
+                    if (!ip.isSiteLocalAddress() && !ip.isLoopbackAddress() && ip.getHostAddress().indexOf(":") == -1) {
                         netip = ip.getHostAddress();
                         finded = true;
                         break;
-                    } else if (ip.isSiteLocalAddress()
-                            && !ip.isLoopbackAddress()
-                            && ip.getHostAddress().indexOf(":") == -1) {
+                    } else if (ip.isSiteLocalAddress() && !ip.isLoopbackAddress()
+                                   && ip.getHostAddress().indexOf(":") == -1) {
                         localip = ip.getHostAddress();
                     }
                 }

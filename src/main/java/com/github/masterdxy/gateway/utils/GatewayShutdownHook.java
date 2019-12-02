@@ -1,6 +1,5 @@
 package com.github.masterdxy.gateway.utils;
 
-
 import com.github.masterdxy.gateway.config.VertxInitialization;
 import com.github.masterdxy.gateway.spring.SpringContext;
 import com.github.masterdxy.gateway.task.TaskRegistry;
@@ -14,18 +13,17 @@ public class GatewayShutdownHook extends Thread {
 
     private static final Logger logger = LoggerFactory.getLogger(GatewayShutdownHook.class);
 
-    private static final GatewayShutdownHook gatewayShutdownHook = new GatewayShutdownHook("GatewayShutdownHook");
+    private static final GatewayShutdownHook GATEWAY_SHUTDOWN_HOOK = new GatewayShutdownHook("GatewayShutdownHook");
 
-    @Override
-    public void run() {
+    @Override public void run() {
         if (VertxInitialization.getDeploymentIds().size() > 0) {
             if (VertxInitialization.isStarted()) {
                 CountDownLatch countDownLatch = new CountDownLatch(VertxInitialization.getDeploymentIds().size());
                 VertxInitialization.setStarted(false);
-                VertxInitialization.getDeploymentIds().forEach(deploymentId ->
-                        VertxInitialization.getVertx().undeploy(deploymentId, async -> {
-                            countDownLatch.countDown();
-                        }));
+                VertxInitialization.getDeploymentIds()
+                    .forEach(deploymentId -> VertxInitialization.getVertx().undeploy(deploymentId, async -> {
+                        countDownLatch.countDown();
+                    }));
                 try {
                     countDownLatch.await(1000, TimeUnit.MILLISECONDS);
                 } catch (InterruptedException ignore) {
@@ -44,6 +42,6 @@ public class GatewayShutdownHook extends Thread {
     }
 
     public static GatewayShutdownHook getGatewayShutdownHook() {
-        return gatewayShutdownHook;
+        return GATEWAY_SHUTDOWN_HOOK;
     }
 }

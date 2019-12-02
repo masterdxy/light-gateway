@@ -8,21 +8,16 @@ import io.vertx.ext.web.RoutingContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-@Component
-@Lazy(value = false)
-public class HttpPlugin implements Plugin {
-    @Override
-    public int order() {
+@Component @Lazy(value = false) public class HttpPlugin implements Plugin {
+    @Override public int order() {
         return -60;
     }
 
-    @Override
-    public boolean match(RoutingContext context) {
+    @Override public boolean match(RoutingContext context) {
         return ContextUtils.isHttp(context);
     }
 
-    @Override
-    public PluginResult execute(RoutingContext context, PluginChain chain) {
+    @Override public PluginResult execute(RoutingContext context, PluginChain chain) {
         return PluginResult.fail("Not available");
     }
 }

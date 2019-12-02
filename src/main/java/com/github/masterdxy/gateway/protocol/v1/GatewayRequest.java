@@ -23,7 +23,6 @@ public class GatewayRequest {
     //this param is fill by request handler.
     private String extraUrl;
 
-
     public String getNamespace() {
         return namespace;
     }
