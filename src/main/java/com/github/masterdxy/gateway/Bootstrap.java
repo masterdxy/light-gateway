@@ -16,7 +16,7 @@ public class Bootstrap {
 
     private static Logger log = LoggerFactory.getLogger(Bootstrap.class);
 
-    /*
+    /**
      For local test only.
       */
     public static void main(String[] args) {

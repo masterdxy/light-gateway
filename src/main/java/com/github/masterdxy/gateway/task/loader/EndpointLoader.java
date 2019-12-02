@@ -4,9 +4,9 @@ import com.github.masterdxy.gateway.common.Constant;
 import com.github.masterdxy.gateway.common.Endpoint;
 import com.github.masterdxy.gateway.common.dao.EndpointDao;
 import com.github.masterdxy.gateway.plugin.endpoint.EndpointManager;
-import com.github.masterdxy.gateway.task.RunOnStartFixDelayScheduledService;
 import com.github.masterdxy.gateway.task.TaskRegistry;
 import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.AbstractScheduledService;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
 import org.jfaster.mango.operator.Mango;
@@ -20,12 +20,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-@Component public class EndpointLoader extends RunOnStartFixDelayScheduledService implements TaskRegistry.Task {
+/**
+ * @author tomoyo
+ */
+@Component public class EndpointLoader extends AbstractScheduledService implements TaskRegistry.Task {
 
     private static final Logger logger = LoggerFactory.getLogger(EndpointLoader.class);
 
     @Autowired private Mango mango;
-    @Autowired private MasterLocker masterLocker;
+    @Autowired private MasterWriteLocker masterWriteLocker;
     @Autowired private EndpointManager endpointManager;
     @Autowired private HazelcastInstance hazelcastInstance;
 
@@ -36,8 +39,8 @@ import java.util.concurrent.TimeUnit;
     }
 
     private void fetchEndpointData() {
-        if (masterLocker.isHasMasterLock()) {
-            logger.info("fetch endpoint data from MySQL store with lock ...");
+        if (masterWriteLocker.isHasMasterLock()) {
+            logger.info("[EndpointConfig] Fetch Endpoint Config from [MySQL], with MasterWriteLock=[TRUE]");
             if (endpointDao == null) {
                 endpointDao = mango.create(EndpointDao.class);
             }
@@ -47,7 +50,7 @@ import java.util.concurrent.TimeUnit;
             hazelcastInstance.getMap(Constant.HAZELCAST_EPC_MAP_KEY).putAll(endpointConfigMap);
             endpointManager.updateEpcMap(endpointConfigMap);
         } else {
-            logger.info("fetch endpoint data from hazelcast store without lock ...");
+            logger.info("[EndpointConfig] Fetch Endpoint Config from [HAZELCAST], with MasterWriteLock=[FALSE]");
             IMap<String, Endpoint> iMap = hazelcastInstance.getMap(Constant.HAZELCAST_EPC_MAP_KEY);
             Set<String> keySet = iMap.keySet();
             Map<String, Endpoint> endpointConfigMap = Maps.newConcurrentMap();
@@ -62,7 +65,7 @@ import java.util.concurrent.TimeUnit;
     }
 
     @Override public String name() {
-        return "endpoint-loader";
+        return "endpoint-config-loader";
     }
 
     @Override public void stop() {
@@ -71,5 +74,13 @@ import java.util.concurrent.TimeUnit;
 
     @Override public int order() {
         return 2;
+    }
+
+    @Override public void startAfterRunOnce() throws Exception {
+        startAsync().awaitRunning();
+    }
+
+    @Override protected void startUp() throws Exception {
+        runOneIteration();
     }
 }
