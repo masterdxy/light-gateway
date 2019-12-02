@@ -12,7 +12,9 @@ import java.io.Serializable;
 //config rate limiter params , RateLimitPlugin use.
 public class RateLimit implements Serializable {
 
-    @ID private Long endpointId;
+    @ID private Long id;
+
+    private Long endpointId;
 
     /**
      * URL
@@ -28,12 +30,12 @@ public class RateLimit implements Serializable {
     //period of refill in second
     private int refillSecond;
 
-    public Long getEndpointId() {
-        return endpointId;
+    public Long getId() {
+        return id;
     }
 
-    public void setEndpointId(Long endpointId) {
-        this.endpointId = endpointId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public int getOverdraft() {
@@ -68,5 +70,13 @@ public class RateLimit implements Serializable {
     @Setter(StringToEnumFunction.class)
     public void setLimitPolicy(RateLimitPolicy limitPolicy) {
         this.limitPolicy = limitPolicy;
+    }
+
+    public Long getEndpointId() {
+        return endpointId;
+    }
+
+    public void setEndpointId(Long endpointId) {
+        this.endpointId = endpointId;
     }
 }

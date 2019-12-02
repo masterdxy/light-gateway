@@ -61,17 +61,17 @@ public class RateLimitLoader extends AbstractScheduledService implements TaskReg
     }
 
     @Override
-    public void startAfterRunOnce() throws Exception {
+    public void startAfterRunOnce() {
         startAsync().awaitRunning();
     }
 
     @Override
-    protected void startUp() throws Exception {
+    protected void startUp() {
         runOneIteration();
     }
 
     @Override
-    protected void runOneIteration() throws Exception {
+    protected void runOneIteration() {
         fetchRateLimitData();
     }
 
@@ -88,9 +88,7 @@ public class RateLimitLoader extends AbstractScheduledService implements TaskReg
             List<RateLimit> allRateLimit = rateLimitDao.getAll();
             Map<Long, RateLimit> rateLimitHashMap = Maps.newHashMap();
             if (allRateLimit != null) {
-                allRateLimit.forEach(rateLimit -> {
-                    rateLimitHashMap.put(rateLimit.getEndpointId(), rateLimit);
-                });
+                allRateLimit.forEach(rateLimit -> rateLimitHashMap.put(rateLimit.getEndpointId(), rateLimit));
             }
             IMap<Long, RateLimit> hazelMap = hazelcastInstance.getMap(HAZELCAST_RATE_LIMIT_MAP_KEY);
             hazelMap.clear();
