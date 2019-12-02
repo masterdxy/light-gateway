@@ -1,6 +1,9 @@
 package com.github.masterdxy.gateway.plugin;
 
-//plugin chain execute result, returned to plugin handler.
+/**
+ * plugin chain execute result, returned to plugin handler.
+ * @author tomoyo
+ */
 public class PluginResult {
 
     private Throwable throwable;

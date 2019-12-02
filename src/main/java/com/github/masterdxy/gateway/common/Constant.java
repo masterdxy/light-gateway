@@ -60,6 +60,11 @@ public final class Constant {
     public static final String GATEWAY_REQUEST_KEY = "gr";
     public static final String ENDPOINT_CONFIG = "epc";
     public static final String MOCK_DATA_KEY = "mock";
+    public static final String RATE_LIMIT_KEY = "rate";
+    public static final String AUTH_RESULT_KEY = "auth";
+
+    public static final int AUTH_SUCCESS = 1000;
+
 
     /**
      * Response Headers
@@ -78,5 +83,8 @@ public final class Constant {
     public static final String HAZELCAST_EPC_MAP_KEY = "hazelcast_epc_map";
     public static final String HAZELCAST_LOCK_KEY = "config_keeper_lock";
     public static final String HAZELCAST_MOCK_DATA_MAP_KEY = "hazelcast_mock_data_map";
+    public static final String HAZELCAST_RATE_LIMIT_MAP_KEY = "hazelcast_rate_limit_map";
+
+    public static final String HAZELCAST_RATE_LIMIT_BUCKET_MAP_KEY = "rl_buckets";
 
 }

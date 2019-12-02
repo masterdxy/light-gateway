@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author tomoyo
+ */
 @Component @Lazy(value = false) public class ResponseTimeHandler implements Handler<RoutingContext> {
 
     private static Logger logger = LoggerFactory.getLogger(ResponseTimeHandler.class);
