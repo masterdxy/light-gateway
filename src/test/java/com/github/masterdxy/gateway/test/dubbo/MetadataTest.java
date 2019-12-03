@@ -1,4 +1,4 @@
-package com.github.masterdxy.gateway.test;
+package com.github.masterdxy.gateway.test.dubbo;
 
 import org.apache.dubbo.common.Constants;
 import org.apache.dubbo.config.ApplicationConfig;
@@ -41,7 +41,7 @@ public class MetadataTest {
 
     @Test void testServiceDefinitionParse() throws InterruptedException {
         //todo use set ?
-        String key = "com.jiaoma.service.sample.api.CRUDService:1.0.0:provider:sample-service.metaData";
+        String key = "com.github.masterdxy.service.sample.api.CRUDService:1.0.0:provider:sample-service.metaData";
         String value = sync.get(key);
         Assertions.assertNotNull(value);
         Gson gson = new Gson();

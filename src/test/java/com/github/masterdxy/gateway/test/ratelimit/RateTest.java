@@ -1,4 +1,4 @@
-package com.github.masterdxy.gateway.test;
+package com.github.masterdxy.gateway.test.ratelimit;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;

@@ -1,4 +1,4 @@
-package com.github.masterdxy.gateway.test;
+package com.github.masterdxy.gateway.test.url;
 
 import com.github.masterdxy.gateway.plugin.endpoint.AntPathMatcher;
 import org.junit.jupiter.api.Assertions;

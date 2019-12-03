@@ -1,4 +1,4 @@
-package com.github.masterdxy.gateway.test;
+package com.github.masterdxy.gateway.test.spring;
 
 import com.github.masterdxy.gateway.config.GatewaySpringConfiguration;
 import com.github.masterdxy.gateway.plugin.Plugin;
