@@ -17,6 +17,9 @@ import org.springframework.stereotype.Component;
 
 import static org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE;
 
+/**
+ * @author tomoyo
+ */
 @Component @Scope(value = SCOPE_PROTOTYPE) public class GatewayVerticle extends AbstractVerticle {
 
     private static Logger log = LoggerFactory.getLogger(GatewayVerticle.class);
