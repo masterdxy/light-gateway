@@ -22,8 +22,12 @@ public class Endpoint implements Serializable {
     //sign check for this epc
     private boolean isNeedSign;
 
-    //UK
-    private String namespace;
+    /**
+     * timeout ms
+     */
+    private long timeoutInMs;
+
+    private String nameSpaceId;
     private String version;
 
     //0 OK 1 stop
@@ -77,12 +81,12 @@ public class Endpoint implements Serializable {
         this.id = id;
     }
 
-    public String getNamespace() {
-        return namespace;
+    public String getNameSpaceId() {
+        return nameSpaceId;
     }
 
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
+    public void setNameSpaceId(String nameSpaceId) {
+        this.nameSpaceId = nameSpaceId;
     }
 
     public String getVersion() {
@@ -99,5 +103,13 @@ public class Endpoint implements Serializable {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public long getTimeoutInMs() {
+        return timeoutInMs;
+    }
+
+    public void setTimeoutInMs(long timeoutInMs) {
+        this.timeoutInMs = timeoutInMs;
     }
 }
