@@ -10,8 +10,8 @@ import java.io.Serializable;
 public class Endpoint implements Serializable {
 
     @ID private Long id;
-    //match uri : /crud, matcher will use AntPathMatcher
-    private String uri;
+    //match uriPattern : /crud, matcher will use AntPathMatcher
+    private String uriPattern;
     //ONLY support http/dubbo
     private String upstreamType;
     //for http is proxy server urls use "," split
@@ -22,23 +22,24 @@ public class Endpoint implements Serializable {
     //sign check for this epc
     private boolean isNeedSign;
 
+
     /**
      * timeout ms
      */
     private long timeoutInMs;
 
-    private String nameSpaceId;
+    private String namespaceId;
     private String version;
 
     //0 OK 1 stop
     private int status;
 
-    public String getUri() {
-        return uri;
+    public String getUriPattern() {
+        return uriPattern;
     }
 
-    public void setUri(String uri) {
-        this.uri = uri;
+    public void setUriPattern(String uriPattern) {
+        this.uriPattern = uriPattern;
     }
 
     public String getUpstreamType() {
@@ -81,12 +82,12 @@ public class Endpoint implements Serializable {
         this.id = id;
     }
 
-    public String getNameSpaceId() {
-        return nameSpaceId;
+    public String getNamespaceId() {
+        return namespaceId;
     }
 
-    public void setNameSpaceId(String nameSpaceId) {
-        this.nameSpaceId = nameSpaceId;
+    public void setNamespaceId(String namespaceId) {
+        this.namespaceId = namespaceId;
     }
 
     public String getVersion() {

@@ -8,7 +8,7 @@
 
 #### EndpointConfig
 `id`<br/>
-`uri`<br/>
+`uriPattern`<br/>
 `upstream_type`<br/>
 `upstream_url`<br/>
 `is_need_auth`<br/>

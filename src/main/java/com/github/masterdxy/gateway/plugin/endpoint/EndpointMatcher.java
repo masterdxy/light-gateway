@@ -25,7 +25,7 @@ import java.util.Set;
     //    Endpoint endpoint = new Endpoint();
     //        endpoint.setNeedSign(true);
     //        endpoint.setNeedAuth(true);
-    //        endpoint.setUri("/crud");
+    //        endpoint.setUriPattern("/crud");
     //        endpoint.setUpstreamUrl("com.jiaoma.service.sample.api.CRUDService");
     //        endpoint.setUpstreamType("dubbo");
     //        endpoint.setId(1L);

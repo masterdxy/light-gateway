@@ -46,7 +46,7 @@ import java.util.concurrent.TimeUnit;
             }
             Map<String, Endpoint> endpointConfigMap = Maps.newConcurrentMap();
             List<Endpoint> allEpc = endpointDao.getAll();
-            allEpc.forEach(epc -> endpointConfigMap.put(epc.getUri(), epc));
+            allEpc.forEach(epc -> endpointConfigMap.put(epc.getUriPattern(), epc));
             hazelcastInstance.getMap(Constant.HAZELCAST_EPC_MAP_KEY).putAll(endpointConfigMap);
             endpointManager.updateEpcMap(endpointConfigMap);
         } else {

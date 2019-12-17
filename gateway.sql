@@ -1,6 +1,6 @@
 CREATE TABLE `gw_endpoint_config` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `uri` varchar(64) NOT NULL DEFAULT '',
+  `uriPattern` varchar(64) NOT NULL DEFAULT '',
   `upstream_type` varchar(32) NOT NULL DEFAULT 'dubbo',
   `upstream_url` varchar(128) NOT NULL DEFAULT '',
   `is_need_auth` tinyint(1) NOT NULL DEFAULT '1',
