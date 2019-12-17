@@ -9,7 +9,10 @@ import org.jfaster.mango.invoker.function.enums.StringToEnumFunction;
 
 import java.io.Serializable;
 
-//config rate limiter params , RateLimitPlugin use.
+/**
+ * config rate limiter params , RateLimitPlugin use.
+ * @author tomoyo
+ */ //
 public class RateLimit implements Serializable {
 
     @ID private Long id;
