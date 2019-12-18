@@ -13,36 +13,37 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 public class Bootstrap {
-
-    private static Logger log = LoggerFactory.getLogger(Bootstrap.class);
-
-    /**
-     For local test only.
-      */
-    public static void main(String[] args) {
-
-        SystemPropertiesConfig.prepareProperties();
-
-        // Build ApplicationContext before vertx startup.
-        SpringContext.initContext(GatewaySpringConfiguration.class);
-
-        CountDownLatch countDownLatch = new CountDownLatch(2);// deploy 2 verticle
-        // Init vertx.
-        VertxInitialization vertxInitialization = SpringContext.instance(VertxInitialization.class);
-        vertxInitialization.initialization(countDownLatch);
-
-        // Register tasks
-        List<TaskRegistry.Task> taskList = SpringContext.instances(TaskRegistry.Task.class);
-        TaskRegistry.startAll(taskList);
-        try {
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            log.error("Start failed.", e);
-        }
-        Runtime.getRuntime().addShutdownHook(GatewayShutdownHook.getGatewayShutdownHook());
-        VertxInitialization.setStarted(true);
-        log.info("Gateway Started.");
-
-    }
-
+	
+	private static Logger log = LoggerFactory.getLogger(Bootstrap.class);
+	
+	/**
+	 * For local test only.
+	 */
+	public static void main (String[] args) {
+		
+		SystemPropertiesConfig.prepareProperties();
+		
+		// Build ApplicationContext before vertx startup.
+		SpringContext.initContext(GatewaySpringConfiguration.class);
+		
+		CountDownLatch countDownLatch = new CountDownLatch(2);// deploy 2 verticle
+		// Init vertx.
+		VertxInitialization vertxInitialization = SpringContext.instance(VertxInitialization.class);
+		vertxInitialization.initialization(countDownLatch);
+		
+		// Register tasks
+		List<TaskRegistry.Task> taskList = SpringContext.instances(TaskRegistry.Task.class);
+		TaskRegistry.startAll(taskList);
+		try {
+			countDownLatch.await();
+		}
+		catch (InterruptedException e) {
+			log.error("Start failed.", e);
+		}
+		Runtime.getRuntime().addShutdownHook(GatewayShutdownHook.getGatewayShutdownHook());
+		VertxInitialization.setStarted(true);
+		log.info("Gateway Started.");
+		
+	}
+	
 }

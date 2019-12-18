@@ -20,33 +20,40 @@ import static org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROT
 /**
  * @author tomoyo
  */
-@Component @Scope(value = SCOPE_PROTOTYPE) public class GatewayVerticle extends AbstractVerticle {
-
-    private static Logger log = LoggerFactory.getLogger(GatewayVerticle.class);
-
-    @Autowired private HandlerMapping handlerMapping;
-
-    @NacosValue("${gateway.bind.port:8080}") private int bindPort;
-    @NacosValue("${gateway.bind.host:}") private String bindHost;
-
-    @Override public void start(Future<Void> startFuture) {
-        //TODO use hazelcast address picker
-        if (StringUtils.isEmpty(bindHost)) {
-            bindHost = AddressUtils.getLocalIpAddress();
-            log.warn("bind host is null, pick :{}", bindHost);
-        }
-        SocketAddress bindAddress = SocketAddress.inetSocketAddress(bindPort, bindHost);
-        log.info("Gateway is bind to {}", bindAddress.toString());
-        //Build router and handlers
-        Handler<HttpServerRequest> handler = handlerMapping.getGatewayHandler(vertx);
-        vertx.createHttpServer().requestHandler(handler).listen(bindAddress, (httpServerAsyncResult -> {
-            if (httpServerAsyncResult.succeeded()) {
-                startFuture.complete();
-            } else {
-                startFuture.fail(httpServerAsyncResult.cause());
-            }
-        }));
-
-    }
-
+@Component
+@Scope(value = SCOPE_PROTOTYPE)
+public class GatewayVerticle extends AbstractVerticle {
+	
+	private static Logger log = LoggerFactory.getLogger(GatewayVerticle.class);
+	
+	@Autowired
+	private HandlerMapping handlerMapping;
+	
+	@NacosValue("${gateway.bind.port:8080}")
+	private int    bindPort;
+	@NacosValue("${gateway.bind.host:}")
+	private String bindHost;
+	
+	@Override
+	public void start (Future<Void> startFuture) {
+		//TODO use hazelcast address picker
+		if (StringUtils.isEmpty(bindHost)) {
+			bindHost = AddressUtils.getLocalIpAddress();
+			log.warn("bind host is null, pick :{}", bindHost);
+		}
+		SocketAddress bindAddress = SocketAddress.inetSocketAddress(bindPort, bindHost);
+		log.info("Gateway is bind to {}", bindAddress.toString());
+		//Build router and handlers
+		Handler<HttpServerRequest> handler = handlerMapping.getGatewayHandler(vertx);
+		vertx.createHttpServer().requestHandler(handler).listen(bindAddress, (httpServerAsyncResult -> {
+			if (httpServerAsyncResult.succeeded()) {
+				startFuture.complete();
+			}
+			else {
+				startFuture.fail(httpServerAsyncResult.cause());
+			}
+		}));
+		
+	}
+	
 }

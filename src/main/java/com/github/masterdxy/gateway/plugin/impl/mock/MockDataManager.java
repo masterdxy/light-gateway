@@ -10,23 +10,26 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
-@Component public class MockDataManager {
-
-    private static final Logger logger = LoggerFactory.getLogger(MockDataManager.class);
-    private AtomicReference<Map<Long, MockData>> mapAtomicReference = new AtomicReference<>(Maps.newConcurrentMap());
-
-    public MockDataManager() {
-    }
-
-    public void updateMockDataMap(Map<Long, MockData> dataMap) {
-        Objects.requireNonNull(dataMap);
-        logger.info("update mock data map size :{}", dataMap.size());
-        mapAtomicReference.compareAndSet(mapAtomicReference.get(), dataMap);
-    }
-
-    MockData getMockDataByEpcId(Long epcId) {
-        Objects.requireNonNull(epcId);
-        return mapAtomicReference.get().get(epcId);
-    }
-
+@Component
+public class MockDataManager {
+	
+	private static final Logger                              logger             =
+		LoggerFactory.getLogger(MockDataManager.class);
+	private              AtomicReference<Map<Long,MockData>> mapAtomicReference =
+		new AtomicReference<>(Maps.newConcurrentMap());
+	
+	public MockDataManager () {
+	}
+	
+	public void updateMockDataMap (Map<Long,MockData> dataMap) {
+		Objects.requireNonNull(dataMap);
+		logger.info("update mock data map size :{}", dataMap.size());
+		mapAtomicReference.compareAndSet(mapAtomicReference.get(), dataMap);
+	}
+	
+	MockData getMockDataByEpcId (Long epcId) {
+		Objects.requireNonNull(epcId);
+		return mapAtomicReference.get().get(epcId);
+	}
+	
 }

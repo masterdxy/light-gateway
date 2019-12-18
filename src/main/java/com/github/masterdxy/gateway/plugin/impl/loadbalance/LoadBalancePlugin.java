@@ -8,17 +8,22 @@ import io.vertx.ext.web.RoutingContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-@Component @Lazy(value = false) public class LoadBalancePlugin implements Plugin {
-
-    @Override public int order() {
-        return -70;
-    }
-
-    @Override public boolean match(RoutingContext context) {
-        return ContextUtils.isHttp(context);
-    }
-
-    @Override public PluginResult execute(RoutingContext context, PluginChain chain) {
-        return null;
-    }
+@Component
+@Lazy(value = false)
+public class LoadBalancePlugin implements Plugin {
+	
+	@Override
+	public int order () {
+		return -70;
+	}
+	
+	@Override
+	public boolean match (RoutingContext context) {
+		return ContextUtils.isHttp(context);
+	}
+	
+	@Override
+	public PluginResult execute (RoutingContext context, PluginChain chain) {
+		return null;
+	}
 }

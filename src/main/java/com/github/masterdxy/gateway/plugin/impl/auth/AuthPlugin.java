@@ -23,31 +23,31 @@ import static com.github.masterdxy.gateway.common.Constant.AUTH_SUCCESS;
 @Component
 @Lazy(value = false)
 public class AuthPlugin implements Plugin {
-    private static Logger logger = LoggerFactory.getLogger(AuthPlugin.class);
-
-    @Autowired
-    private SSOAuthProvider ssoAuthProvider;
-
-    @Override
-    public int order() {
-        return -90;
-    }
-
-    @Override
-    public boolean match(RoutingContext context) {
-        Endpoint endpoint = ContextUtils.getEndpoint(context);
-        return endpoint.isNeedAuth();
-    }
-
-    @Override
-    public PluginResult execute(RoutingContext context, PluginChain chain) {
-        logger.info("AuthPlugin...");
-        GatewayRequest request = context.get(Constant.GATEWAY_REQUEST_KEY);
-        AuthResult authResult = ssoAuthProvider.doAuth(request.getToken());
-        if (authResult.getAuthCode() != AUTH_SUCCESS) {
-            return PluginResult.fail("Auth failed.");
-        }
-        context.put(AUTH_RESULT_KEY,authResult);
-        return chain.execute();
-    }
+	private static Logger logger = LoggerFactory.getLogger(AuthPlugin.class);
+	
+	@Autowired
+	private SSOAuthProvider ssoAuthProvider;
+	
+	@Override
+	public int order () {
+		return -90;
+	}
+	
+	@Override
+	public boolean match (RoutingContext context) {
+		Endpoint endpoint = ContextUtils.getEndpoint(context);
+		return endpoint.isNeedAuth();
+	}
+	
+	@Override
+	public PluginResult execute (RoutingContext context, PluginChain chain) {
+		logger.info("AuthPlugin...");
+		GatewayRequest request = context.get(Constant.GATEWAY_REQUEST_KEY);
+		AuthResult authResult = ssoAuthProvider.doAuth(request.getToken());
+		if (authResult.getAuthCode() != AUTH_SUCCESS) {
+			return PluginResult.fail("Auth failed.");
+		}
+		context.put(AUTH_RESULT_KEY, authResult);
+		return chain.execute();
+	}
 }

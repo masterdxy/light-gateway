@@ -21,7 +21,7 @@
 3. 在nacos中新建namespace，并将nacos.data中的配置修改后保存;
 4. 导入gateway.sql文件到MySQL中;
 5. 以上操作检查完毕后，启动Gateway: sh bin/start.sh -daemon -env=dev
-6. 终端执行curl --request GET \ --url http://gateway-host:80/check_startup 如果返回 OK 则表明启动成功，否则根据返回错误进行修改;
+6. 终端执行curl --request GET \ --url http://gateway-host:8081/check_startup 如果返回 OK 则表明启动成功，否则根据返回错误进行修改;
 
 #### Gateway管理
 > 参考light-gateway-admin手册进行管理

@@ -15,20 +15,23 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Component
 public class RateLimitManager {
-
-    private static final Logger logger = LoggerFactory.getLogger(RateLimitManager.class);
-    private AtomicReference<Map<Long, RateLimit>> mapAtomicReference = new AtomicReference<>(Maps.newConcurrentMap());
-
-    public RateLimitManager() {}
-
-    public void updateRateLimit(Map<Long, RateLimit> dataMap) {
-        Objects.requireNonNull(dataMap);
-        logger.info("update rate limit data map size :{}", dataMap.size());
-        mapAtomicReference.compareAndSet(mapAtomicReference.get(), dataMap);
-    }
-
-    RateLimit getRateLimit(Long epcId) {
-        Objects.requireNonNull(epcId);
-        return mapAtomicReference.get().get(epcId);
-    }
+	
+	private static final Logger                               logger             =
+		LoggerFactory.getLogger(RateLimitManager.class);
+	private              AtomicReference<Map<Long,RateLimit>> mapAtomicReference =
+		new AtomicReference<>(Maps.newConcurrentMap());
+	
+	public RateLimitManager () {
+	}
+	
+	public void updateRateLimit (Map<Long,RateLimit> dataMap) {
+		Objects.requireNonNull(dataMap);
+		logger.info("update rate limit data map size :{}", dataMap.size());
+		mapAtomicReference.compareAndSet(mapAtomicReference.get(), dataMap);
+	}
+	
+	RateLimit getRateLimit (Long epcId) {
+		Objects.requireNonNull(epcId);
+		return mapAtomicReference.get().get(epcId);
+	}
 }

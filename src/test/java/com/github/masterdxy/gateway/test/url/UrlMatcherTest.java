@@ -6,8 +6,9 @@ import org.junit.jupiter.api.Test;
 
 public class UrlMatcherTest {
 
-    @Test void testMatch() {
-        AntPathMatcher antPathMatcher = new AntPathMatcher();
-        Assertions.assertTrue(antPathMatcher.match("/crud/**", "/crud/user/findOne"));
-    }
+	@Test
+	void testMatch () {
+		AntPathMatcher antPathMatcher = new AntPathMatcher();
+		Assertions.assertTrue(antPathMatcher.match("/crud/**", "/crud/user/findOne"));
+	}
 }

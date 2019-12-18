@@ -11,17 +11,18 @@ import java.time.Duration;
 import java.util.Date;
 
 public class RateTest {
-    @Test void testRateLimit() throws InterruptedException {
-        Refill refill = Refill.greedy(1, Duration.ofSeconds(5));
-        Bandwidth limit = Bandwidth.classic(2, refill);
-        Bucket bucket = Bucket4j.builder().addLimit(limit).build();
+	@Test
+	void testRateLimit () throws InterruptedException {
+		Refill refill = Refill.greedy(1, Duration.ofSeconds(5));
+		Bandwidth limit = Bandwidth.classic(2, refill);
+		Bucket bucket = Bucket4j.builder().addLimit(limit).build();
 
-        for (; ; ) {
-            ConsumptionProbe consumptionProbe = bucket.tryConsumeAndReturnRemaining(1);
-            System.out.println(
-                new Date() + " consumed : " + consumptionProbe.isConsumed() + ", remain : " + consumptionProbe
-                                                                                                  .getRemainingTokens());
-            Thread.sleep(1000);
-        }
-    }
+		for (; ; ) {
+			ConsumptionProbe consumptionProbe = bucket.tryConsumeAndReturnRemaining(1);
+			System.out.println(
+				new Date() + " consumed : " + consumptionProbe.isConsumed() + ", remain : " + consumptionProbe
+					                                                                              .getRemainingTokens());
+			Thread.sleep(1000);
+		}
+	}
 }

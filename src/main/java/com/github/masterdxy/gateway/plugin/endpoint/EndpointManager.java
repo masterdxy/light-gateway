@@ -10,10 +10,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
-@Component public class EndpointManager {
-
-    // ✅resolve endpoint config from datasource.
-    // ✅watch endpoint changes.
+@Component
+public class EndpointManager {
+	
+	// ✅resolve endpoint config from datasource.
+	// ✅watch endpoint changes.
 
 
     /*
@@ -23,21 +24,21 @@ import java.util.concurrent.atomic.AtomicReference;
     http-reserve-proxy
     client:/crud,  namespace=yyy-app version=1.2.0  method=findXX
      */
-
-    private AtomicReference<Map<String, Endpoint>> mapAtomicReference = new AtomicReference<>(Maps.newConcurrentMap());
-
-    private static Logger logger = LoggerFactory.getLogger(EndpointManager.class);
-
-    public void updateEpcMap(Map<String, Endpoint> map) {
-        Objects.requireNonNull(map);
-        logger
-            .info("updating endpoint map, before size :{}, now size :{}", mapAtomicReference.get().size(), map.size());
-        mapAtomicReference.compareAndSet(mapAtomicReference.get(), map);
-
-    }
-
-    public Map<String, Endpoint> getEndpointMap() {
-        return mapAtomicReference.get();
-    }
-
+	
+	private AtomicReference<Map<String,Endpoint>> mapAtomicReference = new AtomicReference<>(Maps.newConcurrentMap());
+	
+	private static Logger logger = LoggerFactory.getLogger(EndpointManager.class);
+	
+	public void updateEpcMap (Map<String,Endpoint> map) {
+		Objects.requireNonNull(map);
+		logger
+			.info("updating endpoint map, before size :{}, now size :{}", mapAtomicReference.get().size(), map.size());
+		mapAtomicReference.compareAndSet(mapAtomicReference.get(), map);
+		
+	}
+	
+	public Map<String,Endpoint> getEndpointMap () {
+		return mapAtomicReference.get();
+	}
+	
 }

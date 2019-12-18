@@ -8,5 +8,4 @@ import com.google.common.util.concurrent.AbstractScheduledService;
  */
 public abstract class RunOnStartFixDelayScheduledService extends AbstractScheduledService implements TaskRegistry.Task {
 
-
 }

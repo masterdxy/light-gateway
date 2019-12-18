@@ -11,19 +11,24 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 //for http upstream
-@Component @Lazy(value = false) public class RewritePlugin implements Plugin {
-    private static Logger logger = LoggerFactory.getLogger(RewritePlugin.class);
-
-    @Override public int order() {
-        return -70;
-    }
-
-    @Override public boolean match(RoutingContext context) {
-        return ContextUtils.isHttp(context);
-    }
-
-    @Override public PluginResult execute(RoutingContext context, PluginChain chain) {
-        logger.info("RewritePlugin...");
-        return chain.execute();
-    }
+@Component
+@Lazy(value = false)
+public class RewritePlugin implements Plugin {
+	private static Logger logger = LoggerFactory.getLogger(RewritePlugin.class);
+	
+	@Override
+	public int order () {
+		return -70;
+	}
+	
+	@Override
+	public boolean match (RoutingContext context) {
+		return ContextUtils.isHttp(context);
+	}
+	
+	@Override
+	public PluginResult execute (RoutingContext context, PluginChain chain) {
+		logger.info("RewritePlugin...");
+		return chain.execute();
+	}
 }

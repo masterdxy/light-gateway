@@ -26,82 +26,88 @@ import static com.github.masterdxy.gateway.common.Constant.HAZELCAST_RATE_LIMIT_
  */
 @Component
 public class RateLimitLoader extends AbstractScheduledService implements TaskRegistry.Task {
-
-    private static final Logger logger = LoggerFactory.getLogger(RateLimitLoader.class);
-
-    @Autowired
-    private HazelcastInstance hazelcastInstance;
-    @Autowired
-    private Mango mango;
-    @Autowired
-    private MasterWriteLocker masterWriteLocker;
-    @Autowired
-    private RateLimitManager rateLimitManager;
-
-    private RateLimitDao rateLimitDao;
-
-    @Override
-    public String name() {
-        return "rate-limit-data-loader";
-    }
-
-    @Override
-    public void stop() {
-        super.stopAsync();
-    }
-
-    @Override
-    public int order() {
-        return 5;
-    }
-
-    @Override
-    protected Scheduler scheduler() {
-        return Scheduler.newFixedDelaySchedule(Constant.DELAY_LOAD_EPC, Constant.DELAY_LOAD_EPC, TimeUnit.MILLISECONDS);
-    }
-
-    @Override
-    public void startAfterRunOnce() {
-        startAsync().awaitRunning();
-    }
-
-    @Override
-    protected void startUp() {
-        runOneIteration();
-    }
-
-    @Override
-    protected void runOneIteration() {
-        fetchRateLimitData();
-    }
-
-    /**
-     * retrieve data from database and cache into cache.
-     */
-    private void fetchRateLimitData() {
-        if (masterWriteLocker.isHasMasterLock()) {
-            logger.info("[RateLimit] Fetch RateLimit Config from [MySQL], with MasterWriteLock=[{}]",
-                masterWriteLocker.isHasMasterLock());
-            if (rateLimitDao == null) {
-                rateLimitDao = mango.create(RateLimitDao.class);
-            }
-            List<RateLimit> allRateLimit = rateLimitDao.getAll();
-            Map<Long, RateLimit> rateLimitHashMap = Maps.newHashMap();
-            if (allRateLimit != null) {
-                allRateLimit.forEach(rateLimit -> rateLimitHashMap.put(rateLimit.getEndpointId(), rateLimit));
-            }
-            IMap<Long, RateLimit> hazelMap = hazelcastInstance.getMap(HAZELCAST_RATE_LIMIT_MAP_KEY);
-            hazelMap.clear();
-            hazelMap.putAll(rateLimitHashMap);
-        } else {
-            logger.info("[RateLimit] Fetch RateLimit Config from [HAZELCAST], with MasterWriteLock=[{}]",
-                masterWriteLocker.isHasMasterLock());
-            IMap<Long, RateLimit> hazelcastInstanceMap = hazelcastInstance.getMap(HAZELCAST_RATE_LIMIT_MAP_KEY);
-            Map<Long, RateLimit> rateLimitConcurrentMap = Maps.newConcurrentMap();
-            hazelcastInstanceMap.keySet()
-                .forEach(key -> rateLimitConcurrentMap.put(key, hazelcastInstanceMap.get(key)));
-            rateLimitManager.updateRateLimit(rateLimitConcurrentMap);
-        }
-    }
-
+	
+	private static final Logger logger = LoggerFactory.getLogger(RateLimitLoader.class);
+	
+	@Autowired
+	private HazelcastInstance hazelcastInstance;
+	@Autowired
+	private Mango             mango;
+	@Autowired
+	private MasterWriteLocker masterWriteLocker;
+	@Autowired
+	private RateLimitManager  rateLimitManager;
+	
+	private RateLimitDao rateLimitDao;
+	
+	@Override
+	public String name () {
+		return "rate-limit-data-loader";
+	}
+	
+	@Override
+	public void stop () {
+		super.stopAsync();
+	}
+	
+	@Override
+	public int order () {
+		return 5;
+	}
+	
+	@Override
+	protected Scheduler scheduler () {
+		return Scheduler.newFixedDelaySchedule(Constant.DELAY_LOAD_EPC, Constant.DELAY_LOAD_EPC,
+		                                       TimeUnit.MILLISECONDS);
+	}
+	
+	@Override
+	public void startAfterRunOnce () {
+		startAsync().awaitRunning();
+	}
+	
+	@Override
+	protected void startUp () {
+		runOneIteration();
+	}
+	
+	@Override
+	protected void runOneIteration () {
+		fetchRateLimitData();
+	}
+	
+	/**
+	 * retrieve data from database and cache into cache.
+	 */
+	private void fetchRateLimitData () {
+		if (masterWriteLocker.isHasMasterLock()) {
+			logger.info(
+				"[RateLimit] Fetch RateLimit Config from [MySQL], with MasterWriteLock=[{}]",
+				masterWriteLocker.isHasMasterLock()
+			           );
+			if (rateLimitDao == null) {
+				rateLimitDao = mango.create(RateLimitDao.class);
+			}
+			List<RateLimit> allRateLimit = rateLimitDao.getAll();
+			Map<Long,RateLimit> rateLimitHashMap = Maps.newHashMap();
+			if (allRateLimit != null) {
+				allRateLimit.forEach(rateLimit -> rateLimitHashMap.put(rateLimit.getEndpointId(), rateLimit));
+			}
+			IMap<Long,RateLimit> hazelMap = hazelcastInstance.getMap(HAZELCAST_RATE_LIMIT_MAP_KEY);
+			hazelMap.clear();
+			hazelMap.putAll(rateLimitHashMap);
+		}
+		else {
+			logger.info(
+				"[RateLimit] Fetch RateLimit Config from [HAZELCAST], with MasterWriteLock=[{}]",
+				masterWriteLocker.isHasMasterLock()
+			           );
+			IMap<Long,RateLimit> hazelcastInstanceMap = hazelcastInstance.getMap(HAZELCAST_RATE_LIMIT_MAP_KEY);
+			Map<Long,RateLimit> rateLimitConcurrentMap = Maps.newConcurrentMap();
+			hazelcastInstanceMap.keySet()
+			                    .forEach(key -> rateLimitConcurrentMap.put(key, hazelcastInstanceMap.get(key)));
+			rateLimitManager.updateRateLimit(rateLimitConcurrentMap);
+		}
+	}
+	
 }

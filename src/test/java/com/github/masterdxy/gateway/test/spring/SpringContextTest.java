@@ -14,13 +14,16 @@ import java.util.stream.Collectors;
 
 public class SpringContextTest {
 
-    private static Logger logger = LoggerFactory.getLogger(SpringContextTest.class);
+	private static Logger logger = LoggerFactory.getLogger(SpringContextTest.class);
 
-    @Test void testPluginsSort() {
-        SpringContext.initContext(GatewaySpringConfiguration.class);
-        List<Plugin> plugins = SpringContext.instances(Plugin.class);
-        plugins.sort(Comparator.comparingInt(Plugin::order));
-        logger.info("Plugins : {}",
-            plugins.stream().map(p -> ClassUtils.getShortClassName(p, "null")).collect(Collectors.joining(",")));
-    }
+	@Test
+	void testPluginsSort () {
+		SpringContext.initContext(GatewaySpringConfiguration.class);
+		List<Plugin> plugins = SpringContext.instances(Plugin.class);
+		plugins.sort(Comparator.comparingInt(Plugin::order));
+		logger.info(
+			"Plugins : {}",
+			plugins.stream().map(p -> ClassUtils.getShortClassName(p, "null")).collect(Collectors.joining(","))
+		           );
+	}
 }

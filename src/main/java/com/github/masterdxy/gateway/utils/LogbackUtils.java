@@ -8,14 +8,16 @@ import java.net.UnknownHostException;
 
 //Note: add local ip address into logback context.
 public class LogbackUtils extends ClassicConverter {
-
-    @Override public String convert(ILoggingEvent event) {
-        try {
-            return InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        return "UNKNOWN";
-    }
-
+	
+	@Override
+	public String convert (ILoggingEvent event) {
+		try {
+			return InetAddress.getLocalHost().getHostAddress();
+		}
+		catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		return "UNKNOWN";
+	}
+	
 }

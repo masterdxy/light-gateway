@@ -9,7 +9,7 @@ import static com.github.masterdxy.gateway.common.Constant.DEFAULT_DATASOURCE_NA
 /**
  * @author tomoyo
  */
-@DB(table = "gw_endpoint_rate_limit", name = DEFAULT_DATASOURCE_NAME) public interface RateLimitDao
-    extends CrudDao<RateLimit, Long> {
+@DB(table = "gw_endpoint_rate_limit", name = DEFAULT_DATASOURCE_NAME)
+public interface RateLimitDao extends CrudDao<RateLimit,Long> {
 
 }
