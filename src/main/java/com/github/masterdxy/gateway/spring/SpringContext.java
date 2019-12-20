@@ -9,13 +9,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * @author tomoyo
+ */
 public class SpringContext {
 	
 	private static ApplicationContext context = null;
 	
-	public static ApplicationContext initContext (Class configurationCls) {
+	public static void initContext (Class configurationCls) {
 		context = new AnnotationConfigApplicationContext(configurationCls);
-		return context;
 	}
 	
 	public static void stop () {

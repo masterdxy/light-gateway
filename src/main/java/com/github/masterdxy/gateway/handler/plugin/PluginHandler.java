@@ -14,8 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-/*
+/**
  * Execute plugin chain
+ * @author tomoyo
  */
 @Component
 @Lazy(value = false)
